@@ -44,3 +44,13 @@ Multiple objects per page.
 
 ###High Complexity
 
+- generate a list of URLs
+- for each URL
+  - create a context that creates a list of URLs
+  - for each URL
+    - create a context that chops the page up into bits.
+    - for each page section
+      - get out the bits of the section you care about and export them to a record collecting thing.
+ 
+
+
