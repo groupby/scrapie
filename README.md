@@ -62,6 +62,8 @@ Trials
 
 - Each URL contains one record.
 
+Code example:
+
     var urlIterator = generateUrls();
     
     urlIterator.process(function(pContext) {
@@ -76,6 +78,8 @@ Trials
 
 - Each URL is a list page with ten items.
 - Each item should be emitted as a separate record.
+
+Code example:
 
     urlIterator = generateUrls();
     
@@ -97,6 +101,8 @@ Trials
 - Each URL is a list page.  
 - Each list page has 10 items.  
 - Each item has a detail page URL with additional info.
+
+Code example:
 
     urlIterator = generateUrls();
     
