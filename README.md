@@ -62,35 +62,35 @@ Trials
 
 - Each URL contains one record.
 
-	var urlIterator = generateUrls();
-	
-	urlIterator.process(function(pContext) {
-	    process(pContext);
-	});
-	
-	function process(pContext){
-	    pContext.emit("price", pContext.getJsText("$('#price p')"));
-	}
+    var urlIterator = generateUrls();
+    
+    urlIterator.process(function(pContext) {
+        process(pContext);
+    });
+    
+    function process(pContext){
+        pContext.emit("price", pContext.getJsText("$('#price p')"));
+    }
 
 ###Medium Complexity
 
 - Each URL is a list page with ten items.
 - Each item should be emitted as a separate record.
 
-	urlIterator = generateUrls();
-	
-	urlIterator.process(function(pContext) {
-		var sections = pContext.breakIntoSections("$('.breakout')");
-	    sections.forEach(function(pContext){
-		    process(pContext);
-		});
-	});
-	
-	function process(pContext){
-	    var id = pContext.getJs("$('.id div+div')");
-	    pContext.emit(id, "price", pContext.getJs("$('.price p')"));
-	    pContext.emit(id, "price", pContext.getJs("$('.title b')"));
-	}
+    urlIterator = generateUrls();
+    
+    urlIterator.process(function(pContext) {
+        var sections = pContext.breakIntoSections("$('.breakout')");
+        sections.forEach(function(pContext){
+            process(pContext);
+        });
+    });
+    
+    function process(pContext){
+        var id = pContext.getJs("$('.id div+div')");
+        pContext.emit(id, "price", pContext.getJs("$('.price p')"));
+        pContext.emit(id, "price", pContext.getJs("$('.title b')"));
+    }
 
 ###High Complexity
 
@@ -98,32 +98,32 @@ Trials
 - Each list page has 10 items.  
 - Each item has a detail page URL with additional info.
 
-	urlIterator = generateUrls();
-	
-	urlIterator.process(function(pContext) {
-		var sections = pContext.breakIntoSections("$('.item')");
-	    sections.forEach(function(pContext){
-		    processListItem(pContext);
-		    var workingId = pContext.getJs("$('.id div')");
-		    pContext.setWorkingId(workingId);
-		    pContext.processUrlJs("$('a.productDetail')", function(pContext){
-		    	processDetailPage(pContext);
-		    });
-		    pContext.processUrl("http://example.com/images.html?q=" + workingId, function(){
-		    	processDetailImages(pContext);
-		    });
-		});	
-	});
-	
-	
-	function processListItem(pContext){
-	    pContext.emit("title", pContext.getJs("$('.title b')"));
-	}
-	
-	function processDetailPage(pContext){
-	    pContext.emitForWorkingId("price", pContext.getJs("$('#price')"));
-	}
-	
-	function processDetailImages(pContext){
-	    pContext.emitForWorkingId("img", pContext.getJs("$('.main img').attr('src')"));
-	}
+    urlIterator = generateUrls();
+    
+    urlIterator.process(function(pContext) {
+        var sections = pContext.breakIntoSections("$('.item')");
+        sections.forEach(function(pContext){
+            processListItem(pContext);
+            var workingId = pContext.getJs("$('.id div')");
+            pContext.setWorkingId(workingId);
+            pContext.processUrlJs("$('a.productDetail')", function(pContext){
+                processDetailPage(pContext);
+            });
+            pContext.processUrl("http://example.com/images.html?q=" + workingId, function(){
+                processDetailImages(pContext);
+            });
+        });    
+    });
+    
+    
+    function processListItem(pContext){
+        pContext.emit("title", pContext.getJs("$('.title b')"));
+    }
+    
+    function processDetailPage(pContext){
+        pContext.emitForWorkingId("price", pContext.getJs("$('#price')"));
+    }
+    
+    function processDetailImages(pContext){
+        pContext.emitForWorkingId("img", pContext.getJs("$('.main img').attr('src')"));
+    }
