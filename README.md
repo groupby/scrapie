@@ -64,7 +64,13 @@ Trials
 
 Code example:
 
-    var urlIterator = generateUrls();
+    var urlIterator = UrlIterator(function(pIndex){
+        if (pIndex < 10000) {
+    		return "http://www.example.com/record.html?id=" + pIndex;
+    	} else {
+    		return null;
+    	}
+    });
     
     urlIterator.process(function(pContext) {
         process(pContext);
