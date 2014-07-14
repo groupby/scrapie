@@ -7,9 +7,9 @@ var urlIterator = new UrlIterator(function(pIndex){
 });
 urlIterator.forEach(function(pContext) {
     var sections = pContext.breakIntoSections(".item", function(pContext){
+     	var workingId = pContext.getJq("a").attr("href").split("=")[1];
     	pContext.setWorkingId(workingId);
         processListItem(pContext);
-     	var workingId = pContext.getJq("a").attr("href").split("=")[1];
      	pContext.emitForWorkingId("id", workingId);
         pContext.processUrlsJq("a", function(pContext){
             processDetailPage(pContext);

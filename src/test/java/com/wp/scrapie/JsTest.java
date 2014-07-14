@@ -25,20 +25,20 @@ public class JsTest extends JsLoader {
 	@Test
 	public void testEmit() throws Exception {
 		Js test = new Js();
-		test.setWriter(new StringWriter());
+		Js.setWriter(new StringWriter());
 		test.emit("key1", "value1");
-		test.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", test.getWriter().toString());
+		Js.flush();
+		assertEquals("{\"key1\":[\"value1\"]}\n", Js.getWriter().toString());
 	}
 
 	@Test
 	public void testEmitForWorkingId() throws Exception {
 		Js test = new Js();
 		test.setWorkingId("someId");
-		test.setWriter(new StringWriter());
+		Js.setWriter(new StringWriter());
 		test.emitForWorkingId("key1", "value1");
-		test.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", test.getWriter().toString());
+		Js.flush();
+		assertEquals("{\"key1\":[\"value1\"]}\n", Js.getWriter().toString());
 	}
 
 	@Test
@@ -48,12 +48,11 @@ public class JsTest extends JsLoader {
 		test.setParent(parent);
 		parent.setWorkingId("bob");
 		StringWriter writer = new StringWriter();
-		test.setWriter(writer);
-		parent.setWriter(writer);
+		Js.setWriter(writer);
 		test.emitForWorkingId("key1", "value1");
 		parent.emitForWorkingId("key2", "value2");
-		parent.flush();
-		assertEquals("{\"key1\":[\"value1\"],\"key2\":[\"value2\"]}\n", test
+		Js.flush();
+		assertEquals("{\"key1\":[\"value1\"],\"key2\":[\"value2\"]}\n", Js
 				.getWriter().toString());
 	}
 
@@ -75,10 +74,10 @@ public class JsTest extends JsLoader {
 				createWebPage("0", "<div id='price'>$59.99</div>"));
 		StringWriter writer = run("src/test/js/iterateHigh.js");
 		assertEquals(
-				"{\"id\":[\"abc\"],\"title\":[\"link 1\"],\"price\":[\"$29.99\"]}\n"
-						+ "{\"id\":[\"bcd\"],\"title\":[\"link 2\"],\"price\":[\"$39.99\"]}\n"
-						+ "{\"id\":[\"cde\"],\"title\":[\"link 3\"],\"price\":[\"$49.99\"]}\n"
-						+ "{\"id\":[\"def\"],\"title\":[\"link 4\"],\"price\":[\"$59.99\"]}\n",
+				"{\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
+						+ "{\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
+						+ "{\"id\":[\"cde\"],\"price\":[\"$49.99\"],\"title\":[\"link 3\"]}\n"
+						+ "{\"id\":[\"def\"],\"price\":[\"$59.99\"],\"title\":[\"link 4\"]}\n",
 				writer.getBuffer().toString());
 
 	}

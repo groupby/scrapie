@@ -1,22 +1,31 @@
 package com.wp.scrapie;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -46,15 +55,28 @@ public class Js {
 
 	private Js parent = null;
 
-	private Writer writer;
+	private static Writer writer;
 
 	private String workingId;
+	private static Set<String> excludeValues = new HashSet<>();
 
-	Map<String, Map<String, Set<String>>> records = new HashMap<>();
+	private static Map<String, Map<String, Set<String>>> records = new HashMap<>();
 
-	private static Map<String, String> cookies = null;
+	private static Map<String, String> cookies = new HashMap<String, String>();
+
+	private Map<String, String> postData = new HashMap<>();
+	private static int flushCount = 0;
+	private static int record = 0;
 
 	public Js() {
+	}
+
+	public static int getRecord() {
+		return record;
+	}
+
+	public static void setRecord(int pRecord) {
+		record = pRecord;
 	}
 
 	public void runFile(String pSrc, Writer pWriter)
@@ -76,7 +98,6 @@ public class Js {
 
 		for (Element element : elements) {
 			Js js = new Js();
-			js.setWriter(writer);
 			js.setDocument(element);
 			js.setParent(this);
 			sections.add(js);
@@ -113,7 +134,6 @@ public class Js {
 					url = baseUri.substring(0, baseUri.indexOf("/", 10)) + url;
 				}
 				Js js = new Js();
-				js.setWriter(writer);
 				js.setDocument(loadUrl(url));
 				js.setParent(this);
 				pages.add(js);
@@ -171,7 +191,13 @@ public class Js {
 			Set<String> listItems = new TreeSet<String>();
 			map.put(pKey, listItems);
 		}
-		map.get(pKey).addAll(pValue);
+		for (String value : pValue) {
+			String unescapedValue = StringEscapeUtils.unescapeHtml(value)
+					.replaceAll(" ", " ").trim();
+			if (!excludeValues.contains(unescapedValue)) {
+				map.get(pKey).add(unescapedValue);
+			}
+		}
 		map.get(pKey).remove("");
 		if (map.get(pKey).isEmpty()) {
 			map.remove(pKey);
@@ -179,9 +205,35 @@ public class Js {
 	}
 
 	public void emitForWorkingId(String pKey, String pValue) {
+		emitForWorkingId(pKey, java.util.Arrays.asList(pValue));
+	}
+
+	public void emitForWorkingId(String pKey, String[] pValue) {
 		List<String> listValues = new ArrayList<String>();
-		listValues.add(pValue);
+		for (String value : listValues) {
+			listValues.add(value);
+		}
 		emitForWorkingId(pKey, listValues);
+	}
+
+	public List<String> getReText(String pPattern) {
+		List<String> results = new ArrayList<>();
+		Pattern p = Pattern.compile(pPattern);
+		Matcher matcher = p.matcher(document.toString());
+		while (matcher.find()) {
+			String group0 = matcher.group();
+			System.out.println(group0);
+			System.out
+					.println("email: " + pPattern + " " + matcher.groupCount());
+			if (matcher.groupCount() > 1) {
+				group0 = matcher.group(1);
+				System.out.println(group0);
+			}
+			if (StringUtils.isNotBlank(group0)) {
+				results.add(group0);
+			}
+		}
+		return results;
 	}
 
 	public void emitForWorkingId(String pKey, List<String> pValue) {
@@ -212,14 +264,19 @@ public class Js {
 		addKeyValue(map, pKey, pValue);
 	}
 
-	public void flush() {
+	public static void flush() {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("flush()");
+		}
 		Set<Entry<String, Map<String, Set<String>>>> entrySet = records
 				.entrySet();
 		for (Entry<String, Map<String, Set<String>>> entry : entrySet) {
 			try {
-				writer.write(MAPPER.writeValueAsString(entry.getValue()));
-				writer.write("\n");
-				entry.getValue().clear();
+				if (!entry.getValue().isEmpty()) {
+					writer.write(MAPPER.writeValueAsString(entry.getValue()));
+					writer.write("\n");
+					entry.getValue().clear();
+				}
 			} catch (JsonGenerationException e) {
 				e.printStackTrace();
 			} catch (JsonMappingException e) {
@@ -229,6 +286,7 @@ public class Js {
 			}
 		}
 		records.clear();
+		flushCount++;
 	}
 
 	public String html() {
@@ -237,6 +295,17 @@ public class Js {
 
 	public Elements getJq(String pQuery) {
 		return document.select(pQuery);
+	}
+
+	public List<String> getJqAttr(String pQuery, String pAttr) {
+		Elements selects = document.select(pQuery);
+		List<String> results = new ArrayList<>();
+		for (Element select : selects) {
+			if (select.hasAttr(pAttr)) {
+				results.add(select.attr(pAttr));
+			}
+		}
+		return results;
 	}
 
 	public List<Node> getXPath(String pQuery) throws JaxenException {
@@ -267,32 +336,133 @@ public class Js {
 		return texts;
 	}
 
-	public void loadDom(String pUrl) throws IOException {
+	public void load(String pUrl) throws IOException {
 		document = loadUrl(pUrl);
 	}
 
 	public void login(String pUrl, String... pKeyValues) throws IOException {
-		Connection.Response res = Jsoup.connect(pUrl).data(pKeyValues)
-				.method(Method.POST).execute();
-		cookies = res.cookies();
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("----------------------");
+			LOG.trace("Js.login() started");
+		}
+		loadOrCache(pUrl, Method.POST, pKeyValues);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Js.login() complete");
+			LOG.trace("----------------------");
+		}
 	}
 
 	private Document loadUrl(String pUrl) throws IOException {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("Loading Url: " + pUrl);
+		Method method = Method.GET;
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("----------------------");
+			LOG.trace("nJs.loadUrl() started");
 		}
-		Connection connection = Jsoup.connect(pUrl);
-		connection.timeout(10000);
-		if (cookies != null) {
-			for (Map.Entry<String, String> cookie : cookies.entrySet()) {
-				connection.cookie(cookie.getKey(), cookie.getValue());
+		if (LOG.isInfoEnabled()) {
+			LOG.info("Loading Url: " + pUrl);
+		}
+		Document newDocument = loadOrCache(pUrl, method);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Js.loadUrl() complete");
+			LOG.trace("----------------------");
+		}
+		return newDocument;
+	}
+
+	private Document loadOrCache(String pUrl, Method method,
+			String... pKeyValues) throws IOException {
+		Document newDocument = null;
+		File hashFile = new File(System.getProperty("java.io.tmpdir")
+				+ ".scrapie/" + DigestUtils.md5Hex(pUrl) + describe(pUrl)
+				+ ".txt");
+		if (isRecord() && hashFile.exists()) {
+			File tmp = new File(System.getProperty("java.io.tmpdir")
+					+ ".scrapie");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("ensuring dir exists: " + tmp.getAbsolutePath());
+			}
+			tmp.mkdirs();
+
+			newDocument = Jsoup.parse(hashFile, "UTF8");
+			newDocument.setBaseUri(pUrl);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Loaded from cache");
+			}
+		} else {
+			Connection connection = createConnection(pUrl);
+			connection.data(pKeyValues);
+			Connection.Response res = connection.method(method).execute();
+			cookies.putAll(res.cookies());
+			printCookies("Receiving", res.cookies());
+			newDocument = res.parse();
+			if (isRecord()) {
+				FileUtils.write(hashFile, res.body(), "UTF8");
 			}
 		}
-		return connection.get();
+		return newDocument;
+	}
+
+	private String describe(String pUrl) {
+		URI uri = URI.create(pUrl);
+		return uri.getPath().replaceAll("/", "AOEUSLASHAOEU")
+				.replaceAll("[^a-z^A-Z^0-9^-]", "")
+				.replaceAll("AOEUSLASHAOEU", "-");
+	}
+
+	private void printCookies(String pPrefix, Map<String, String> pCookies) {
+		if (LOG.isTraceEnabled()) {
+			Set<Entry<String, String>> entrySet = pCookies.entrySet();
+			LOG.trace("Cookies (" + pPrefix + "): ");
+			for (Entry<String, String> entry : entrySet) {
+				LOG.trace("\t" + entry);
+			}
+		}
+	}
+
+	private Connection createConnection(String pUrl) {
+		Connection connection = Jsoup.connect(pUrl);
+		connection.timeout(40000);
+		connection.referrer("");
+		connection.followRedirects(true);
+		connection.ignoreHttpErrors(true);
+		connection.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) "
+				+ "AppleWebKit/537.36 (KHTML, like Gecko) "
+				+ "Chrome/35.0.1916.153 Safari/537.36");
+		if (postData != null && !postData.isEmpty()) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Post Data: " + postData);
+			}
+			connection.data(postData);
+		}
+		if (cookies != null && !cookies.isEmpty()) {
+			printCookies("Sending", cookies);
+			connection.cookies(cookies);
+		}
+		return connection;
 	}
 
 	public String evaluateJq(String pJq) throws ScriptException {
 		return "";
+	}
+
+	public static Map<String, String> getCookies() {
+		return cookies;
+	}
+
+	public static void setCookies(Map<String, String> pCookies) {
+		cookies = pCookies;
+	}
+
+	public Map<String, String> getPostData() {
+		return postData;
+	}
+
+	public void setPostData(Map<String, String> pPostData) {
+		postData = pPostData;
+	}
+
+	public void setRecords(Map<String, Map<String, Set<String>>> pRecords) {
+		records = pRecords;
 	}
 
 	public void setDocument(Element doc) {
@@ -311,11 +481,11 @@ public class Js {
 		return parent;
 	}
 
-	public void setWriter(Writer writer) {
-		this.writer = writer;
+	public static void setWriter(Writer pWriter) {
+		writer = pWriter;
 	}
 
-	public Writer getWriter() {
+	public static Writer getWriter() {
 		return writer;
 	}
 
@@ -335,6 +505,28 @@ public class Js {
 		if (LOG.isInfoEnabled()) {
 			LOG.info(pString);
 		}
+	}
+
+	public void printDocument() {
+		if (LOG.isInfoEnabled()) {
+			LOG.info(document.toString());
+		}
+	}
+
+	public static void addExcludeValue(String pValue) {
+		excludeValues.add(pValue);
+	}
+
+	public static void setFlushCount(int pFlushCount) {
+		flushCount = pFlushCount;
+	}
+
+	public static boolean keepGoing() {
+		return record == 0 || (record > 0 && flushCount < record);
+	}
+
+	public static boolean isRecord() {
+		return record > 0;
 	}
 
 }
