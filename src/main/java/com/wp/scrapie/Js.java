@@ -52,8 +52,9 @@ import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
- * Main interface class between the java world and the javascript world
- * 
+ * <code>
+ * Main interface class between the Java world and the JavaScript world
+ * </code>
  * @author will
  *
  */
