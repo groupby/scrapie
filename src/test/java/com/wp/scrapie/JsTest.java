@@ -12,7 +12,7 @@ public class JsTest extends JsLoader {
 	public void testSimple() throws Exception {
 		server.setResource("/index.html?id=0", createWebPage("0", ""));
 		server.setResource("/index.html?id=1", createWebPage("1", ""));
-		StringWriter writer = run("src/test/js/iterateLow.js");
+		StringWriter writer = run(new Js(), "src/test/js/iterateLow.js");
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
 	}
@@ -62,7 +62,7 @@ public class JsTest extends JsLoader {
 				createWebPage("0", "<div id='price'>$49.99</div>"));
 		server.setResource("/detail.jsp?id=def",
 				createWebPage("0", "<div id='price'>$59.99</div>"));
-		StringWriter writer = run("src/test/js/iterateHigh.js");
+		StringWriter writer = run(new Js(), "src/test/js/iterateHigh.js");
 		assertEquals(
 				"{\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
 						+ "{\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
@@ -75,7 +75,7 @@ public class JsTest extends JsLoader {
 	@Test
 	public void testMedium() throws Exception {
 		createListPages();
-		StringWriter writer = run("src/test/js/iterateMedium.js");
+		StringWriter writer = run(new Js(), "src/test/js/iterateMedium.js");
 		assertEquals("{\"id\":[\"abc\"],\"title\":[\"link 1\"]}\n"
 				+ "{\"id\":[\"bcd\"],\"title\":[\"link 2\"]}\n"
 				+ "{\"id\":[\"cde\"],\"title\":[\"link 3\"]}\n"

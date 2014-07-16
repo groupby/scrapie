@@ -111,7 +111,9 @@ public class Js {
 	}
 
 	/**
-	 * Run the file
+	 * <code>
+	 * Write a file
+	 * </code>
 	 */
 	public void runFile(String pSrc, Writer pWriter)
 			throws FileNotFoundException, IOException {
