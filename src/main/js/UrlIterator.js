@@ -12,7 +12,7 @@ var UrlIterator = function(pGenerate) {
 		while ((url = pGenerate(this.index)) != null && emitter.keepGoing()) {
 			this.index++;
 			emitter.load(url);
-			pDealWith(new Emitter(emitter));
+			pDealWith(new EmitterWrapper(emitter));
 		}
 	}
 }

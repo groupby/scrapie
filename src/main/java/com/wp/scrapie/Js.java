@@ -182,7 +182,7 @@ public class Js {
 
 	private StringReader generateEmitterWrapperCode() throws IOException {
 		String rawEmitter = FileUtils.readFileToString(new File(
-				"src/main/js/Emitter.js"), "UTF8");
+				"src/main/js/EmitterWrapper.js"), "UTF8");
 		String injected = getInjectedCode();
 		rawEmitter = rawEmitter.replaceAll("\\s*####", injected);
 		return new StringReader(rawEmitter);
