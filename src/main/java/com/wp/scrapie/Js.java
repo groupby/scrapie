@@ -55,6 +55,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * <code>
  * Main interface class between the Java world and the JavaScript world
  * </code>
+ * 
  * @author will
  *
  */
@@ -86,14 +87,32 @@ public class Js {
 	public Js() {
 	}
 
+	/**
+	 * <code>
+	 * Are we in record mode.  If record is greater than 0, we are and all processing will
+	 * stop when we have flushed that number of records.
+	 * </code>
+	 * 
+	 * @return
+	 */
 	public static int getRecord() {
 		return record;
 	}
 
+	/**
+	 * <code>
+	 * Set the number of records to emit. This also tells the URL loader to
+	 * write each request to disk.
+	 * </code>
+	 * @param pRecord
+	 */
 	public static void setRecord(int pRecord) {
 		record = pRecord;
 	}
 
+	/**
+	 * Run the file
+	 */
 	public void runFile(String pSrc, Writer pWriter)
 			throws FileNotFoundException, IOException {
 		if (LOG.isDebugEnabled()) {
@@ -176,7 +195,8 @@ public class Js {
 		ScriptableObject.putProperty(scope, "emitter", wrappedOut);
 		cx.evaluateReader(scope, new FileReader("src/main/js/UrlIterator.js"),
 				"UrlIterator.js", 1, null);
-		cx.evaluateReader(scope, generateEmitterWrapperCode(), "EmitterWrapper.js", 1, null);
+		cx.evaluateReader(scope, generateEmitterWrapperCode(),
+				"EmitterWrapper.js", 1, null);
 		cx.evaluateString(scope, pJs, "config", 1, null);
 	}
 

@@ -19,11 +19,10 @@ public class JsLoader {
 		server = new PseudoServer();
 	}
 
-	protected StringWriter run(String pTestScript)
+	protected StringWriter run(Js pJs, String pTestScript)
 			throws FileNotFoundException, IOException {
-		Js js = new Js();
 		StringWriter writer = new StringWriter();
-		js.run(IOUtils.toString(new FileInputStream(pTestScript)).replaceAll(
+		pJs.run(IOUtils.toString(new FileInputStream(pTestScript)).replaceAll(
 				"####", String.valueOf(server.getConnectedPort())), writer);
 		return writer;
 	}

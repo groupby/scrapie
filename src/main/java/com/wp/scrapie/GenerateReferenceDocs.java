@@ -24,6 +24,7 @@ import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaMember;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaSource;
+
 /**
  * @internal
  * @author will
@@ -31,14 +32,14 @@ import com.thoughtworks.qdox.model.JavaSource;
  */
 public class GenerateReferenceDocs {
 
+	private static final String DIST_DOCS = "src/main/docs";
 	private static final Logger LOG = Logger
 			.getLogger(GenerateReferenceDocs.class);
 
-	
 	public static void main(String[] args) throws IOException {
 		generate();
 	}
-	
+
 	private static List<JavaClass> getJavaSource(File sourceFile)
 			throws IOException {
 		JavaProjectBuilder builder = new JavaProjectBuilder();
@@ -53,7 +54,7 @@ public class GenerateReferenceDocs {
 			throw new IllegalStateException("Could not find: "
 					+ sourceDir.getAbsolutePath());
 		}
-		new File("dist/docs").mkdirs();
+		new File(DIST_DOCS).mkdirs();
 
 		File[] sourceFiles = getJavaFiles(sourceDir);
 		for (int m = 0; m < sourceFiles.length; m++) {
@@ -66,12 +67,13 @@ public class GenerateReferenceDocs {
 
 				Writer out = null;
 				try {
-					String filename = createFilename("dist/docs", javaClass, "");
+					String filename = createFilename(DIST_DOCS, javaClass, "");
 					if (LOG.isInfoEnabled()) {
 						LOG.info("Creating: " + filename);
 					}
 					out = new BufferedWriter(new OutputStreamWriter(
 							new FileOutputStream(new File(filename)), "UTF-8"));
+					out.write("![Scrapie](src/main/images/sheepVerySmall.png) ");
 					out.write(javaClass.getName() + "\n");
 					out.write("=====" + "\n\n");
 					if (javaClass.getComment() != null) {
@@ -165,7 +167,7 @@ public class GenerateReferenceDocs {
 				String[] properties = parenMatcher.group(2).split(",");
 				for (int i = 0; i < properties.length; i++) {
 					String prop = properties[i];
-					prop = prop.replaceAll("\\bString\\b", "string");
+//					prop = prop.replaceAll("\\bString\\b", "string");
 					constructorString.append(prop.substring(
 							prop.lastIndexOf(".") + 1).trim()
 							+ (i + 1 < properties.length ? ", " : ""));
@@ -243,6 +245,7 @@ public class GenerateReferenceDocs {
 
 	private static void writeMethodSignature(Writer pOut, JavaClass pJavaClass,
 			JavaMethod pJavaMethod) throws IOException {
+		pOut.write("#### ");
 		if (pJavaMethod.getReturnType() != null
 				&& !pJavaMethod.getReturns().getName().toString()
 						.equals(pJavaClass.getName())
@@ -256,7 +259,6 @@ public class GenerateReferenceDocs {
 		pOut.write("<span style=\"font-size:16px;\">"
 				+ parameterListToString(pJavaMethod) + "</span>");
 		pOut.write("\n");
-		pOut.write("------\n\n");
 		writeParameterComments(pOut, pJavaMethod.getTagsByName("param"));
 		writeReturns(pOut, pJavaMethod);
 	}
@@ -301,7 +303,7 @@ public class GenerateReferenceDocs {
 
 	private static String squareToCurly(List<? extends Object> pList) {
 		return pList.isEmpty() ? "()" : pList.toString().replaceAll("\\[", "(")
-				.replaceAll("\\]", ")").replaceAll("\\bString\\b", "string");
+				.replaceAll("\\]", ")");
 	}
 
 	private static String createFilename(String pOutputDir,
