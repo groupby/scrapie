@@ -8,6 +8,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 urlIterator.forEach(function(pContext) {
     var sections = pContext.breakIntoSections(".item", function(pContext){
         process(pContext);
+        pContext.flush();
     });
 });
 

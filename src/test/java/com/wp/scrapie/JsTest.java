@@ -12,14 +12,9 @@ public class JsTest extends JsLoader {
 	public void testSimple() throws Exception {
 		server.setResource("/index.html?id=0", createWebPage("0", ""));
 		server.setResource("/index.html?id=1", createWebPage("1", ""));
-		StringWriter writer = run("src/test/js/iterateSimple.js");
+		StringWriter writer = run("src/test/js/iterateLow.js");
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
-	}
-
-	@Test
-	public void testRecursiveCall() throws Exception {
-		org.junit.Assert.fail("ni");
 	}
 
 	@Test
@@ -54,11 +49,6 @@ public class JsTest extends JsLoader {
 		Js.flush();
 		assertEquals("{\"key1\":[\"value1\"],\"key2\":[\"value2\"]}\n", Js
 				.getWriter().toString());
-	}
-
-	@Test
-	public void testEmitIndexed() throws Exception {
-		org.junit.Assert.fail("ni");
 	}
 
 	@Test

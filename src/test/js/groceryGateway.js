@@ -20,6 +20,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 });
 urlIterator.forEach(function(pContext) {
     processDetailPage(pContext);
+    pContext.flush();
 });
 
 

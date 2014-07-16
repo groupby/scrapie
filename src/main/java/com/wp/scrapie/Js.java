@@ -5,9 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,8 +21,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.script.ScriptException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -43,6 +44,19 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.JavaAnnotation;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
+import com.thoughtworks.qdox.model.JavaSource;
+
+/**
+ * Main interface class between the java world and the javascript world
+ * 
+ * @author will
+ *
+ */
 public class Js {
 
 	private static final Logger LOG = Logger.getLogger(Js.class);
@@ -88,6 +102,7 @@ public class Js {
 		run(js, pWriter);
 	}
 
+	@DontGenerate
 	public List<Js> breakIntoSections(String pQuery) {
 		Elements elements = document.select(pQuery);
 		if (elements == null || elements.isEmpty()) {
@@ -105,6 +120,7 @@ public class Js {
 		return sections;
 	}
 
+	@DontGenerate
 	public List<Js> processUrlsJq(String pQuery) throws IOException {
 		Elements elements = document.select(pQuery);
 
@@ -158,8 +174,79 @@ public class Js {
 		Object wrappedOut = Context.javaToJS(this, scope);
 		ScriptableObject.putProperty(scope, "emitter", wrappedOut);
 		cx.evaluateReader(scope, new FileReader("src/main/js/UrlIterator.js"),
-				"urlIterator", 1, null);
+				"UrlIterator.js", 1, null);
+		cx.evaluateReader(scope, generateEmitterWrapperCode(), "EmitterWrapper.js", 1, null);
 		cx.evaluateString(scope, pJs, "config", 1, null);
+	}
+
+	private StringReader generateEmitterWrapperCode() throws IOException {
+		String rawEmitter = FileUtils.readFileToString(new File(
+				"src/main/js/Emitter.js"), "UTF8");
+		String injected = getInjectedCode();
+		rawEmitter = rawEmitter.replaceAll("\\s*####", injected);
+		return new StringReader(rawEmitter);
+	}
+
+	private String getInjectedCode() throws IOException {
+		StringBuilder sb = new StringBuilder();
+		JavaProjectBuilder builder = new JavaProjectBuilder();
+		JavaSource source = builder.addSource(new File(
+				"src/main/java/com/wp/scrapie/Js.java"));
+		JavaClass js = source.getClassByName("Js");
+		List<JavaMethod> methods = js.getMethods();
+		Collections.sort(methods, new Comparator<JavaMethod>() {
+
+			@Override
+			public int compare(JavaMethod pO1, JavaMethod pO2) {
+				return pO1.getName().compareTo(pO2.getName());
+			}
+		});
+		for (JavaMethod method : methods) {
+			List<JavaAnnotation> annotations = method.getAnnotations();
+
+			if (shouldGenerate(method, annotations)) {
+				StringBuilder p = getParameterList(method);
+				sb.append("\n\tthis.").append(method.getName())
+						.append(" = function(");
+				sb.append(p);
+				sb.append("){ ");
+				if (!method.getReturns().isVoid()) {
+					sb.append("return ");
+				}
+				sb.append("this.emitter.").append(method.getName()).append("(");
+				sb.append(p);
+				sb.append("); }");
+			}
+		}
+		return sb.toString();
+	}
+
+	private StringBuilder getParameterList(JavaMethod method) {
+		StringBuilder p = new StringBuilder();
+		List<JavaParameter> parameters = method.getParameters();
+		for (int i = 0; i < parameters.size(); i++) {
+			JavaParameter param = parameters.get(i);
+			String name = param.getName();
+			p.append(name);
+			if (i < parameters.size() - 1) {
+				p.append(", ");
+			}
+		}
+		return p;
+	}
+
+	private boolean shouldGenerate(JavaMethod pMethod,
+			List<JavaAnnotation> pAnnotations) {
+		if (!pMethod.isPublic()) {
+			return false;
+		}
+		for (JavaAnnotation javaAnnotation : pAnnotations) {
+			if (javaAnnotation.getType().getCanonicalName()
+					.equals(DontGenerate.class.getName())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void emit(String pKey, String... pValue) {
@@ -173,6 +260,7 @@ public class Js {
 		emit(pKey, listValues);
 	}
 
+	@DontGenerate
 	public void emit(String pKey, List<String> pValue) {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("emitting: " + pKey + ": " + pValue);
@@ -208,6 +296,7 @@ public class Js {
 		emitForWorkingId(pKey, java.util.Arrays.asList(pValue));
 	}
 
+	@DontGenerate
 	public void emitForWorkingId(String pKey, String[] pValue) {
 		List<String> listValues = new ArrayList<String>();
 		for (String value : listValues) {
@@ -223,8 +312,8 @@ public class Js {
 		while (matcher.find()) {
 			String group0 = matcher.group();
 			System.out.println(group0);
-			System.out
-					.println("email: " + pPattern + " " + matcher.groupCount());
+			System.out.println("email: " + pPattern + " "
+					+ matcher.groupCount());
 			if (matcher.groupCount() > 1) {
 				group0 = matcher.group(1);
 				System.out.println(group0);
@@ -236,6 +325,7 @@ public class Js {
 		return results;
 	}
 
+	@DontGenerate
 	public void emitForWorkingId(String pKey, List<String> pValue) {
 		Js current = this;
 		while (current != null) {
@@ -289,7 +379,7 @@ public class Js {
 		flushCount++;
 	}
 
-	public String html() {
+	public String getHtml() {
 		return document.toString();
 	}
 
@@ -441,10 +531,6 @@ public class Js {
 		return connection;
 	}
 
-	public String evaluateJq(String pJq) throws ScriptException {
-		return "";
-	}
-
 	public static Map<String, String> getCookies() {
 		return cookies;
 	}
@@ -481,10 +567,12 @@ public class Js {
 		return parent;
 	}
 
+	@DontGenerate
 	public static void setWriter(Writer pWriter) {
 		writer = pWriter;
 	}
 
+	@DontGenerate
 	public static Writer getWriter() {
 		return writer;
 	}
@@ -513,18 +601,22 @@ public class Js {
 		}
 	}
 
+	@DontGenerate
 	public static void addExcludeValue(String pValue) {
 		excludeValues.add(pValue);
 	}
 
+	@DontGenerate
 	public static void setFlushCount(int pFlushCount) {
 		flushCount = pFlushCount;
 	}
 
+	@DontGenerate
 	public static boolean keepGoing() {
 		return record == 0 || (record > 0 && flushCount < record);
 	}
 
+	@DontGenerate
 	public static boolean isRecord() {
 		return record > 0;
 	}

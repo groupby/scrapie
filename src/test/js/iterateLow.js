@@ -6,5 +6,6 @@ var urlIterator = new UrlIterator(function(pIndex){
 	 }
 });
 urlIterator.forEach(function(pContext){
-   pContext.emit("title", pContext.getJqText("title"))
+   pContext.emit("title", pContext.getJqText("title"));
+   pContext.flush();
 });
