@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>scrapie</groupId>
 	<artifactId>scrapie</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -27,6 +27,7 @@
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
+						<descriptorRef>project</descriptorRef>
 					</descriptorRefs>
 					<archive>
 						<manifest>
@@ -39,10 +40,8 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
-				<configuration>
-					<mainClass>com.wp.scrapie.Driver</mainClass>
-				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 	<dependencies>

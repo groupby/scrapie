@@ -32,7 +32,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  */
 public class GenerateReferenceDocs {
 
-	private static final String DIST_DOCS = "src/main/docs";
+	private static final String DIST_DOCS = "docs";
 	private static final Logger LOG = Logger
 			.getLogger(GenerateReferenceDocs.class);
 

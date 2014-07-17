@@ -1,6 +1,5 @@
 package com.wp.scrapie;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 /**
  * @internal
  * @author will
@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class Driver {
 
+	private static final Logger LOG = Logger.getLogger(Driver.class);
 	private static Options options = new Options();
 
 	static {
@@ -59,7 +60,9 @@ public class Driver {
 			} else if (logLevel.equals("trace")) {
 				Logger.getRootLogger().setLevel(Level.TRACE);
 			}
-			String outputFilename = cmd.getOptionValue('o');
+			String outputFilename = System.getProperty("workingDir", "")
+					+ (System.getProperty("workingDir", null) != null ? "/"
+							: "") + cmd.getOptionValue('o');
 			String recordValue = cmd.getOptionValue('r', "0");
 			Js js = new Js();
 			Js.setRecord(new Integer(recordValue).intValue());
@@ -74,14 +77,22 @@ public class Driver {
 			out.flush();
 			out.close();
 		} catch (ParseException e) {
+			printError(e);
 			usage(e);
 		} catch (FileNotFoundException e) {
-			usage("Couldn't find file: " + new File(filename).getAbsolutePath());
+			printError(e);
+			usage(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			printError(e);
 			e.printStackTrace();
 		}
 
+	}
+
+	private static void printError(Exception e) {
+		if (LOG.isDebugEnabled()) {
+			LOG.error(e);
+		}
 	}
 
 	private static void usage(String poutorMessage) {

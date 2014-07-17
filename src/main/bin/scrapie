@@ -1,2 +1,11 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-java -jar `cygpath -w $DIR/scrapie.jar` "$@"
+CURRENT=`pwd`
+JAR=$DIR/scrapie.jar
+case "`uname`" in
+CYGWIN*) 
+  DIR=`cygpath -w $DIR`
+  JAR=`cygpath -w $JAR`
+  CURRENT=`cygpath -w $CURRENT`
+;;
+esac
+java -DworkingDir="$CURRENT" -jar "$JAR" "$@"

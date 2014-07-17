@@ -3,8 +3,8 @@ package com.wp.scrapie;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.URI;
@@ -81,6 +81,8 @@ public class Js {
 	private static Map<String, String> cookies = new HashMap<String, String>();
 
 	private Map<String, String> postData = new HashMap<>();
+
+	private static String sourceFileName;
 	private static int flushCount = 0;
 	private static int record = 0;
 
@@ -104,6 +106,7 @@ public class Js {
 	 * Set the number of records to emit. This also tells the URL loader to
 	 * write each request to disk.
 	 * </code>
+	 * 
 	 * @param pRecord
 	 */
 	public static void setRecord(int pRecord) {
@@ -120,7 +123,12 @@ public class Js {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Reading file: " + pSrc);
 		}
-		String js = IOUtils.toString(new FileInputStream(pSrc));
+		File sourceFile = new File(pSrc);
+		if (!sourceFile.exists()) {
+			sourceFile = new File(System.getProperty("workingDir", ""));
+		}
+		String js = IOUtils.toString(new FileInputStream(sourceFile));
+		sourceFileName = sourceFile.getName();
 		run(js, pWriter);
 	}
 
@@ -195,7 +203,8 @@ public class Js {
 		Scriptable scope = cx.initStandardObjects();
 		Object wrappedOut = Context.javaToJS(this, scope);
 		ScriptableObject.putProperty(scope, "emitter", wrappedOut);
-		cx.evaluateReader(scope, new FileReader("src/main/js/UrlIterator.js"),
+		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
+				.getClassLoader().getResourceAsStream("UrlIterator.js")),
 				"UrlIterator.js", 1, null);
 		cx.evaluateReader(scope, generateEmitterWrapperCode(),
 				"EmitterWrapper.js", 1, null);
@@ -203,8 +212,9 @@ public class Js {
 	}
 
 	private StringReader generateEmitterWrapperCode() throws IOException {
-		String rawEmitter = FileUtils.readFileToString(new File(
-				"src/main/js/EmitterWrapper.js"), "UTF8");
+		String rawEmitter = IOUtils.toString(new InputStreamReader(this
+				.getClass().getClassLoader()
+				.getResourceAsStream("EmitterWrapper.js"), "UTF8"));
 		String injected = getInjectedCode();
 		rawEmitter = rawEmitter.replaceAll("\\s*####", injected);
 		return new StringReader(rawEmitter);
@@ -485,12 +495,11 @@ public class Js {
 	private Document loadOrCache(String pUrl, Method method,
 			String... pKeyValues) throws IOException {
 		Document newDocument = null;
-		File hashFile = new File(System.getProperty("java.io.tmpdir")
-				+ ".scrapie/" + DigestUtils.md5Hex(pUrl) + describe(pUrl)
-				+ ".txt");
+		String cacheDir = createCacheDir();
+		File hashFile = new File(cacheDir + DigestUtils.md5Hex(pUrl)
+				+ describe(pUrl) + ".txt");
 		if (isRecord() && hashFile.exists()) {
-			File tmp = new File(System.getProperty("java.io.tmpdir")
-					+ ".scrapie");
+			File tmp = new File(cacheDir);
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("ensuring dir exists: " + tmp.getAbsolutePath());
 			}
@@ -513,6 +522,11 @@ public class Js {
 			}
 		}
 		return newDocument;
+	}
+
+	private String createCacheDir() {
+		return System.getProperty("workingDir", "") + "." + sourceFileName
+				+ "_data/";
 	}
 
 	private String describe(String pUrl) {
@@ -642,6 +656,14 @@ public class Js {
 	@DontGenerate
 	public static boolean isRecord() {
 		return record > 0;
+	}
+
+	public static String getSourceFileName() {
+		return sourceFileName;
+	}
+
+	public static void setSourceFileName(String pSourceFileName) {
+		sourceFileName = pSourceFileName;
 	}
 
 }

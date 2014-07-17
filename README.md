@@ -10,7 +10,7 @@ Quickstart
 
 1. Download the [scrapie-latest.tar.gz](scrapie-latest.tar.gz) 
 1. Unpack it `scrapie-x.x.x` and go into the directory `cd scrapie-x.x.x`
-1. run the test `./scrapie -f scrapies/test.js -o myFile.xml -r 10` 
+1. run the test `./scrapie -f test.js -o myFile.xml -r 10` 
 
 
 Goals
