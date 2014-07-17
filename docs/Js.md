@@ -46,10 +46,10 @@ Main interface class between the Java world and the JavaScript world
 - [runFile(String pSrc, Writer pWriter)](#-598366243)
 - [setCookies(Map pCookies)](#1384324107)
 - [setDocument(Element doc)](#175956064)
-- [setFlushCount(int pFlushCount)](#1418642554)
 - [setParent(Js parent)](#1391625220)
 - [setPostData(Map pPostData)](#-1860901489)
 - [setRecord(int pRecord)](#-1092772818)
+- [setRecordCount(int pRecordCount)](#-623969762)
 - [setRecords(Map pRecords)](#1456381227)
 - [setSourceFileName(String pSourceFileName)](#817008066)
 - [setWorkingId(String workingId)](#-1064871666)
@@ -139,8 +139,6 @@ Write a file
 
 #### <a style="font-size:16px;" name="175956064">setDocument</a><span style="font-size:16px;">(Element doc)</span>
 
-#### <a style="font-size:16px;" name="1418642554">setFlushCount</a><span style="font-size:16px;">(int pFlushCount)</span>
-
 #### <a style="font-size:16px;" name="1391625220">setParent</a><span style="font-size:16px;">(Js parent)</span>
 
 #### <a style="font-size:16px;" name="-1860901489">setPostData</a><span style="font-size:16px;">(Map pPostData)</span>
@@ -152,6 +150,8 @@ Set the number of records to emit. This also tells the URL loader to
 write each request to disk.
 
 
+
+#### <a style="font-size:16px;" name="-623969762">setRecordCount</a><span style="font-size:16px;">(int pRecordCount)</span>
 
 #### <a style="font-size:16px;" name="1456381227">setRecords</a><span style="font-size:16px;">(Map pRecords)</span>
 
