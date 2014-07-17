@@ -23,5 +23,6 @@ var EmitterWrapper = function(pEmitter){
 	 * methods of Js.java that are not tagged with DontGenerate are generated
 	 * here using source code inspection.
 	 */
-	####
+	//GENERATED
+	//GENERATED
 }

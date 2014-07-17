@@ -74,6 +74,7 @@ public class Js {
 	private static Writer writer;
 
 	private String workingId;
+
 	private static Set<String> excludeValues = new HashSet<>();
 
 	private static Map<String, Map<String, Set<String>>> records = new HashMap<>();
@@ -215,16 +216,27 @@ public class Js {
 		String rawEmitter = IOUtils.toString(new InputStreamReader(this
 				.getClass().getClassLoader()
 				.getResourceAsStream("EmitterWrapper.js"), "UTF8"));
-		String injected = getInjectedCode();
-		rawEmitter = rawEmitter.replaceAll("\\s*####", injected);
-		return new StringReader(rawEmitter);
+		int start = rawEmitter.indexOf("//GENERATED") + "//GENERATED".length();
+		int end = rawEmitter.indexOf("//GENERATED", start);
+		String startCode = rawEmitter.substring(0, start);
+		String endCode = rawEmitter.substring(end);
+		return new StringReader(startCode + getInjectedCode() + endCode);
 	}
 
 	private String getInjectedCode() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		JavaProjectBuilder builder = new JavaProjectBuilder();
-		JavaSource source = builder.addSource(new File(
-				"src/main/java/com/wp/scrapie/Js.java"));
+
+		JavaSource source = null;
+		File jsSource = new File("src/main/java/com/wp/scrapie/Js.java");
+		if (jsSource.exists()) {
+			source = builder.addSource(jsSource);
+		} else {
+			InputStreamReader inputStreamReader = new InputStreamReader(this
+					.getClass().getClassLoader().getResourceAsStream("Js.java"));
+			source = builder.addSource(inputStreamReader);
+			inputStreamReader.close();
+		}
 		JavaClass js = source.getClassByName("Js");
 		List<JavaMethod> methods = js.getMethods();
 		Collections.sort(methods, new Comparator<JavaMethod>() {
