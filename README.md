@@ -30,7 +30,7 @@ Choices
 Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.  
 Jsoup was extended to include XPath support.  
 A regular expression matcher is also available.
-See the [API Docs](api.md) for a list of all the features. 
+See the [API Docs](docs) for a list of all the features. 
 
 Usage
 -----
