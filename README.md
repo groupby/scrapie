@@ -8,7 +8,7 @@ _Not the fatal, degenerative disease that affects the nervous systems of sheep a
 Quickstart
 ------
 
-1. Download the [scrapie-latest.zip](scrapie-latest.zip) 
+1. Download the [scrapie-latest.zip](scrapie-latest.zip?raw=true) 
 1. Unpack it `scrapie-x.x.x` and go into the directory `cd scrapie-x.x.x`
 1. run the test `./scrapie -f google.js -o google.xml` 
 
