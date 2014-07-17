@@ -2,17 +2,50 @@ package com.wp.scrapie;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileInputStream;
 import java.io.StringWriter;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 
 public class JsTest extends JsLoader {
+
+	@Rule
+	public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties(
+			"workingDir");
 
 	@Test
 	public void testSimple() throws Exception {
 		server.setResource("/index.html?id=0", createWebPage("0", ""));
 		server.setResource("/index.html?id=1", createWebPage("1", ""));
 		StringWriter writer = run(new Js(), "src/test/js/iterateLow.js");
+		assertEquals("{\"title\":[\"title 0\"]}\n"
+				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
+	}
+
+	@Test
+	public void testRecord() throws Exception {
+		System.setProperty("workingDir", "src/test/java/");
+		server = null;
+		Js.setRecordCount(0);
+		Js.setRecord(1);
+		Js.setSourceFileName("iterateLow.js");
+		Js js = new Js();
+		StringWriter writer = new StringWriter();
+		js.run(IOUtils.toString(
+				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
+				"####", "80"), writer);
+		assertEquals("{\"title\":[\"title 0\"]}\n", writer.getBuffer()
+				.toString());
+		Js.setRecord(2);
+		Js.setRecordCount(0);
+		js = new Js();
+		writer = new StringWriter();
+		js.run(IOUtils.toString(
+				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
+				"####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
 	}

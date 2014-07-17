@@ -84,7 +84,7 @@ public class Js {
 	private Map<String, String> postData = new HashMap<>();
 
 	private static String sourceFileName;
-	private static int flushCount = 0;
+	private static int recordCount = 0;
 	private static int record = 0;
 
 	public Js() {
@@ -411,6 +411,7 @@ public class Js {
 					writer.write(MAPPER.writeValueAsString(entry.getValue()));
 					writer.write("\n");
 					entry.getValue().clear();
+					recordCount++;
 				}
 			} catch (JsonGenerationException e) {
 				e.printStackTrace();
@@ -421,7 +422,6 @@ public class Js {
 			}
 		}
 		records.clear();
-		flushCount++;
 	}
 
 	public String getHtml() {
@@ -508,7 +508,8 @@ public class Js {
 			String... pKeyValues) throws IOException {
 		Document newDocument = null;
 		String cacheDir = createCacheDir();
-		File hashFile = new File(cacheDir + DigestUtils.md5Hex(pUrl)
+		File hashFile = new File(cacheDir
+				+ DigestUtils.md5Hex(extractSaliantParts(pUrl))
 				+ describe(pUrl) + ".txt");
 		if (isRecord() && hashFile.exists()) {
 			File tmp = new File(cacheDir);
@@ -534,6 +535,14 @@ public class Js {
 			}
 		}
 		return newDocument;
+	}
+
+	private String extractSaliantParts(String pUrl) {
+		int endOfDomain = pUrl.indexOf("/", 9);
+		if (endOfDomain == -1) {
+			return "";
+		}
+		return pUrl.substring(endOfDomain);
 	}
 
 	private String createCacheDir() {
@@ -656,13 +665,13 @@ public class Js {
 	}
 
 	@DontGenerate
-	public static void setFlushCount(int pFlushCount) {
-		flushCount = pFlushCount;
+	public static void setRecordCount(int pRecordCount) {
+		recordCount = pRecordCount;
 	}
 
 	@DontGenerate
 	public static boolean keepGoing() {
-		return record == 0 || (record > 0 && flushCount < record);
+		return record == 0 || (record > 0 && recordCount < record);
 	}
 
 	@DontGenerate

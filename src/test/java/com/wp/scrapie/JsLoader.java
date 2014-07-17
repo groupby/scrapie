@@ -11,11 +11,11 @@ import org.junit.Before;
 import com.meterware.pseudoserver.PseudoServer;
 
 public class JsLoader {
-
 	protected PseudoServer server;
 
 	@Before
 	public void before() {
+		Js.setRecord(0);
 		server = new PseudoServer();
 	}
 
@@ -27,5 +27,4 @@ public class JsLoader {
 		return writer;
 	}
 
-	
 }
