@@ -44,7 +44,7 @@ Requires that Java 1.7 is installed and on your path.
 usage: scrapie
  -f,--file <arg>        The JavaScript file to use
  -o,--output <arg>      The file to output to
- -r,--record <arg>      Record this run and stop after N flushes
+ -r,--record <arg>      Record this run and stop after N records have been emitted
  -t,--type <arg>        The record type, json or xml (default)
  -v,--verbosity <arg>   Log Level, trace, debug, info (default)
 ```

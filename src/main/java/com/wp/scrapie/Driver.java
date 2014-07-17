@@ -33,7 +33,7 @@ public class Driver {
 		Option logLevelOption = new Option("v", "verbosity", true,
 				"Log Level, trace, debug, info (default)");
 		Option recordOption = new Option("r", "record", true,
-				"Record this run and stop after N flushes");
+				"Record this run and stop after N records have been emmited");
 		Option typeOption = new Option("t", "type", true,
 				"The record type, json or xml (default)");
 		filenameOption.setRequired(true);
