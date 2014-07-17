@@ -3,7 +3,7 @@
 A Web Scraper.  
 _Not the fatal, degenerative disease that affects the nervous systems of sheep and goats._
 
-[ ![Codeship Status for groupby/scrapie](https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status)](https://codeship.io/projects/27011)
+[ ![Codeship Status for groupby/scrapie](https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status)](https://codeship.io/projects/27011)  
 [![Stories in Ready](https://badge.waffle.io/groupby/scrapie.png?label=ready&title=Ready)](https://waffle.io/groupby/scrapie)
 Quickstart
 ------
