@@ -1,4 +1,4 @@
-![Scrapie](/src/main/images/sheepVerySmall.png) scrAPIe
+![Scrapie](../src/main/images/sheepVerySmall.png) scrAPIe
 =======
 
 A Web Scraper.  

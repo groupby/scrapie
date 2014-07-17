@@ -1,4 +1,4 @@
-![Scrapie](src/main/images/sheepVerySmall.png) XmlWriter
+![Scrapie](../src/main/images/sheepVerySmall.png) XmlWriter
 =====
 
 

@@ -1,4 +1,4 @@
-![Scrapie](src/main/images/sheepVerySmall.png) Js
+![Scrapie](../src/main/images/sheepVerySmall.png) Js
 =====
 
 

@@ -73,7 +73,7 @@ public class GenerateReferenceDocs {
 					}
 					out = new BufferedWriter(new OutputStreamWriter(
 							new FileOutputStream(new File(filename)), "UTF-8"));
-					out.write("![Scrapie](src/main/images/sheepVerySmall.png) ");
+					out.write("![Scrapie](../src/main/images/sheepVerySmall.png) ");
 					out.write(javaClass.getName() + "\n");
 					out.write("=====" + "\n\n");
 					if (javaClass.getComment() != null) {
