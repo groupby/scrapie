@@ -8,10 +8,12 @@ _Not the fatal, degenerative disease that affects the nervous systems of sheep a
 Quickstart
 ------
 
+1. Make sure Java 1.7 is on your computer and the java command is on your path.
 1. Download the [scrapie-latest.zip](scrapie-latest.zip?raw=true) 
 1. Unpack it `scrapie-x.x.x` and go into the directory `cd scrapie-x.x.x`
-1. run the test `./scrapie -f google.js -o google.xml` 
-
+1. run the test 
+ - on *nix `./scrapie -f google.js -o google.xml`   
+ - on windows `scrapie.bat -f google.js -o google.xml` 
 
 Goals
 -----
@@ -24,6 +26,7 @@ A scraper that will generate URLs to crawl and convert them into objects we want
 - must be able to understand the concpet of a listing page that goes to a detail page to generate the object or objects.
 - must be able to resuse global items across pages.  Maybe back multiple pages.
 - the syntax must be as small as possible.
+- be threaded (which it isn't yet)
 
 Choices
 ------
@@ -46,7 +49,7 @@ usage: scrapie
  -v,--verbosity <arg>   Log Level, trace, debug, info (default)
 ```
 
-    ./dist/scrapie -f myScraper.js -o records.xml
+    ./scrapie -f myScraper.js -o records.xml
 
 Examples Scraper Files
 ------
@@ -54,12 +57,12 @@ Examples Scraper Files
 
 ###Low Complexity
 
-Where ach URL contains one record.
+Where each URL contains one record.
 
-```Java
+```JavaScript
 var urlIterator = new UrlIterator(function(pIndex){
     if (pIndex < 2) {
-		return "http://localhost:####/index.html?id=" + pIndex;
+		return "http://www.example.com/index.html?id=" + pIndex;
 	 } else {
 		return null;
 	 }
@@ -72,12 +75,12 @@ urlIterator.forEach(function(pContext){
 
 ###Medium Complexity
 
-Where ach URL is a list page with ten items and each item should be emitted as a separate record.
+Where each URL is a list page with ten items and each item should be emitted as a separate record.
 
-```Java
+```JavaScript
 var urlIterator = new UrlIterator(function(pIndex){
     if (pIndex < 2) {
-		return "http://localhost:####/list?page=" + pIndex;
+		return "http://www.example.com/list?page=" + pIndex;
 	 } else {
 		return null;
 	 }
@@ -100,10 +103,10 @@ function process(pContext){
 
 Where each URL is a list page, each list page has 10 items and each item has a detail page URL with additional info.
 
-```Java
+```JavaScript
 var urlIterator = new UrlIterator(function(pIndex){
     if (pIndex < 2) {
-		return "http://localhost:####/list?page=" + pIndex;
+		return "http://www.example.com/list?page=" + pIndex;
 	 } else {
 		return null;
 	 }
