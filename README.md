@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/groupby/scrapie.png?label=ready&title=Ready)](https://waffle.io/groupby/scrapie)
 ![Scrapie](src/main/images/sheepVerySmall.png) Scrapie
 ======= 
 A Web Scraper.  
