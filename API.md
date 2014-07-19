@@ -22,10 +22,10 @@ that you need, plus some JavaScript wrappings that make closure possible.
 
 Other JavaScript classes and functions are available.  
 
-- [EmitterWrapper.js](src/main/js/EmitterWrapper.js), which wraps the Emitter object to give it some more useful JavaScripty syntax.
-- [FileIterator.js](src/main/js/FileIterator.js), JavaScript backing to a FileLineIterator   
-- [GlobalFunctions.js](src/main/js/GlobalFunctions.js), some useful methods like print()
-- [UrlIterator.js](src/main/UrlIterator.js), which you can implement to generate URLs.
+- [EmitterWrapper.js](src/main/resources/EmitterWrapper.js), which wraps the Emitter object to give it some more useful JavaScripty syntax.
+- [FileIterator.js](src/main/resources/FileIterator.js), JavaScript backing to a FileLineIterator   
+- [GlobalFunctions.js](src/main/resources/GlobalFunctions.js), some useful methods like print()
+- [UrlIterator.js](src/main/resources/UrlIterator.js), which you can implement to generate URLs.
 
 
 Example Usage
