@@ -23,7 +23,7 @@ var EmitterWrapper = function(pEmitter){
 	};
 	/**
 	 * This section is replaced with generated code. Essentially all the public
-	 * methods of Js.java that are not tagged with DontGenerate are generated
+	 * methods of Emitter.java that are not tagged with DontGenerate are generated
 	 * here using source code inspection.
 	 */
 	//GENERATED
