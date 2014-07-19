@@ -6,6 +6,11 @@ import java.io.Writer;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+/**
+ * @internal
+ * @author will
+ *
+ */
 public class XmlWriter extends Writer {
 
 	private static final Logger LOG = Logger.getLogger(XmlWriter.class);

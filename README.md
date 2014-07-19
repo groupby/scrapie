@@ -3,8 +3,7 @@
 A Web Scraper.  
 _Not the fatal, degenerative disease that affects the nervous systems of sheep and goats._
 
-[ ![Codeship Status for groupby/scrapie](https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status)](https://codeship.io/projects/27011)  
-[![Stories in Ready](https://badge.waffle.io/groupby/scrapie.png?label=ready&title=Ready)](https://waffle.io/groupby/scrapie)
+[ ![Codeship Status for groupby/scrapie](https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status)](https://codeship.io/projects/27011) [![Stories in Ready](https://badge.waffle.io/groupby/scrapie.png?label=ready&title=Ready)](https://waffle.io/groupby/scrapie)
 Quickstart
 ------
 
@@ -15,25 +14,10 @@ Quickstart
  - on *nix `./scrapie -f google.js -o google.xml`   
  - on windows `scrapie.bat -f google.js -o google.xml` 
 
-Goals
------
+Docs
+----
 
-A scraper that will generate URLs to crawl and convert them into objects we want to keep.
-
-- must not use XML configuration as using XML to parse HTML is an escaping nightmare.
-- must understand the concept of multiple of the same objects being created from one big page.
-- must be able to log in to password protected sites.
-- must be able to understand the concpet of a listing page that goes to a detail page to generate the object or objects.
-- must be able to resuse global items across pages.  Maybe back multiple pages.
-- the syntax must be as small as possible.
-- be threaded (which it isn't yet)
-
-Choices
-------
-Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.  
-Jsoup was extended to include XPath support.  
-A regular expression matcher is also available.
-See the [API Docs](docs) for a list of all the features. 
+Read the [API.md](API.md) and the [Emitter.md](Emitter.md) to learn about scrapie.
 
 Usage
 -----
@@ -86,7 +70,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 	 }
 });
 urlIterator.forEach(function(pContext) {
-    var sections = pContext.breakIntoSections(".item", function(pContext){
+    pContext.breakIntoSections(".item", function(pContext){
         process(pContext);
         pContext.flush();
     });
@@ -113,7 +97,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 });
 urlIterator.forEach(function(pContext) {
 	print(pContext.getHtml());
-    var sections = pContext.breakIntoSections(".item", function(pContext){
+    pContext.breakIntoSections(".item", function(pContext){
      	var workingId = pContext.getJq("a").attr("href").split("=")[1];
     	pContext.setWorkingId(workingId);
         processListItem(pContext);
@@ -131,3 +115,22 @@ function processDetailPage(pContext){
     pContext.emitForWorkingId("price", pContext.getJqText("#price"));
 }
 ```
+
+Goals
+-----
+
+A scraper that will generate URLs to crawl and convert them into objects we want to keep.
+
+- must not use XML configuration as using XML to parse HTML is an escaping nightmare.
+- must understand the concept of multiple of the same objects being created from one big page.
+- must be able to log in to password protected sites.
+- must be able to understand the concpet of a listing page that goes to a detail page to generate the object or objects.
+- must be able to resuse global items across pages.  Maybe back multiple pages.
+- the syntax must be as small as possible.
+- be threaded (which it isn't yet)
+
+Choices
+------
+Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.  
+Jsoup was extended to include XPath support.  
+A regular expression matcher is also available.

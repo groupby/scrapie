@@ -1,7 +1,7 @@
 version=`cat pom.xml | grep -1 "<artifactId>scrapie</artifactId>" | egrep -o "[0-9]+\.[0-9]+\.[0-9]+" | tr -d "\n"`
 rm -rf target
 rm -rf scrapie-* 
-cp -f src/main/java/com/wp/scrapie/Js.java src/main/resources
+cp -f src/main/java/com/wp/scrapie/Emitter.java src/main/resources
 mvn --quiet clean assembly:assembly -DskipTests
 mkdir -p scrapie-$version
 cp target/scrapie-*.jar scrapie-$version/scrapie.jar

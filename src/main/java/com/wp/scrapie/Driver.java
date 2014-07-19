@@ -64,8 +64,8 @@ public class Driver {
 					+ (System.getProperty("workingDir", null) != null ? "/"
 							: "") + cmd.getOptionValue('o');
 			String recordValue = cmd.getOptionValue('r', "0");
-			Js js = new Js();
-			Js.setRecord(new Integer(recordValue).intValue());
+			Emitter emitter = new Emitter();
+			Emitter.setRecord(new Integer(recordValue).intValue());
 			Writer out = null;
 			String type = cmd.getOptionValue('t', "xml");
 			if (type.equals("xml")) {
@@ -73,7 +73,7 @@ public class Driver {
 			} else {
 				out = new FileWriter(outputFilename);
 			}
-			js.runFile(filename, out);
+			emitter.runFile(filename, out);
 			out.flush();
 			out.close();
 		} catch (ParseException e) {

@@ -18,6 +18,9 @@ var EmitterWrapper = function(pEmitter){
 			pDealWith(pageEmitter);
 		}
 	};
+	this.getParent = function(){
+		return new EmitterWrapper(this.emitter.getParent());
+	};
 	/**
 	 * This section is replaced with generated code. Essentially all the public
 	 * methods of Js.java that are not tagged with DontGenerate are generated

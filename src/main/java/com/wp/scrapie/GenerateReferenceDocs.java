@@ -23,6 +23,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaMember;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
@@ -32,7 +33,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  */
 public class GenerateReferenceDocs {
 
-	private static final String DIST_DOCS = "docs";
+	private static final String DIST_DOCS = "./";
 	private static final Logger LOG = Logger
 			.getLogger(GenerateReferenceDocs.class);
 
@@ -73,7 +74,7 @@ public class GenerateReferenceDocs {
 					}
 					out = new BufferedWriter(new OutputStreamWriter(
 							new FileOutputStream(new File(filename)), "UTF-8"));
-					out.write("![Scrapie](../src/main/images/sheepVerySmall.png) ");
+					out.write("![Emitter](src/main/images/sheepVeryVerySmall.png) ");
 					out.write(javaClass.getName() + "\n");
 					out.write("=====" + "\n\n");
 					if (javaClass.getComment() != null) {
@@ -167,7 +168,7 @@ public class GenerateReferenceDocs {
 				String[] properties = parenMatcher.group(2).split(",");
 				for (int i = 0; i < properties.length; i++) {
 					String prop = properties[i];
-//					prop = prop.replaceAll("\\bString\\b", "string");
+					// prop = prop.replaceAll("\\bString\\b", "string");
 					constructorString.append(prop.substring(
 							prop.lastIndexOf(".") + 1).trim()
 							+ (i + 1 < properties.length ? ", " : ""));
@@ -219,9 +220,17 @@ public class GenerateReferenceDocs {
 		}
 		for (JavaMethod javaMethod : pMethods) {
 			if (isValid(javaMethod)) {
-				pOut.write("- [" + javaMethod.getName()
-						+ parameterListToString(javaMethod) + "](#"
-						+ generateId(javaMethod) + ")\n");
+				pOut.write("- ["
+						+ javaMethod.getName()
+						+ parameterListToString(javaMethod)
+						+ "](#"
+						+ generateId(javaMethod)
+						+ ") "
+						+ (javaMethod.getReturnType().toString().equals("void") ? ""
+								: " returns "
+										+ formatReturn(javaMethod
+												.getReturnType().toString()))
+						+ "\n");
 			}
 		}
 		pOut.write("\n\n");
@@ -247,8 +256,6 @@ public class GenerateReferenceDocs {
 			JavaMethod pJavaMethod) throws IOException {
 		pOut.write("#### ");
 		if (pJavaMethod.getReturnType() != null
-				&& !pJavaMethod.getReturns().getName().toString()
-						.equals(pJavaClass.getName())
 				&& !pJavaMethod.getReturnType().toString().equals("void")) {
 			pOut.write("<span style=\"font-size:12px;color:#AAAAAA\">"
 					+ formatReturn(pJavaMethod) + "</span> ");
@@ -265,10 +272,13 @@ public class GenerateReferenceDocs {
 
 	private static String formatReturn(JavaMethod pJavaMethod) {
 		String full = pJavaMethod.getReturnType().getGenericCanonicalName();
-		return full.replaceAll("java\\.lang\\.String", "string")
-				.replaceAll("java\\.lang\\.Object", "object")
-				.replaceAll("java\\.lang\\.", "")
+		return formatReturn(full);
+	}
+
+	private static String formatReturn(String pFull) {
+		return pFull.replaceAll("java\\.lang\\.", "")
 				.replaceAll("java\\.util\\.", "")
+				.replaceAll("com\\.wp\\.scrapie\\.", "")
 				.replaceAll("com\\.gbi\\.gsa\\.model\\.", "")
 				.replaceAll("com\\.gbi\\.gsa\\.", "").replaceAll("<", "&lt;")
 				.replaceAll(">", "&gt;");
@@ -301,9 +311,21 @@ public class GenerateReferenceDocs {
 		return squareToCurly(pJavaMethod.getParameters());
 	}
 
-	private static String squareToCurly(List<? extends Object> pList) {
-		return pList.isEmpty() ? "()" : pList.toString().replaceAll("\\[", "(")
-				.replaceAll("\\]", ")");
+	private static String squareToCurly(List<JavaParameter> pList) {
+		StringBuilder result = new StringBuilder("(");
+		for (int i = 0; i < pList.size(); i++) {
+			JavaParameter param = pList.get(i);
+			result.append(param.getType().toString() + " ");
+			result.append(param.getName());
+			if (i < pList.size() - 1) {
+				result.append(", ");
+			}
+		}
+		result.append(")");
+		return formatReturn(result.toString());
+		// return pList.isEmpty() ? "()" : pList.toString().replaceAll("\\[",
+		// "(")
+		// .replaceAll("\\]", ")");
 	}
 
 	private static String createFilename(String pOutputDir,

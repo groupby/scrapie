@@ -15,14 +15,14 @@ public class JsLoader {
 
 	@Before
 	public void before() {
-		Js.setRecord(0);
+		Emitter.setRecord(0);
 		server = new PseudoServer();
 	}
 
-	protected StringWriter run(Js pJs, String pTestScript)
+	protected StringWriter run(Emitter pEmitter, String pTestScript)
 			throws FileNotFoundException, IOException {
 		StringWriter writer = new StringWriter();
-		pJs.run(IOUtils.toString(new FileInputStream(pTestScript)).replaceAll(
+		pEmitter.run(IOUtils.toString(new FileInputStream(pTestScript)).replaceAll(
 				"####", String.valueOf(server.getConnectedPort())), writer);
 		return writer;
 	}

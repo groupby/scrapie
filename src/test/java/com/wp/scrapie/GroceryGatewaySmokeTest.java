@@ -21,7 +21,7 @@ public class GroceryGatewaySmokeTest extends JsLoader {
 	public void testGroceryGateway() throws Exception {
 		setupLogin();
 		setupTestFiles();
-		StringWriter writer = run(new Js(), "src/test/js/groceryGateway.js");
+		StringWriter writer = run(new Emitter(), "src/test/js/groceryGateway.js");
 		StringWriter newWriter = new StringWriter();
 		ObjectMapper mapper = new ObjectMapper();
 		String[] rows = writer.getBuffer().toString().split("\n");

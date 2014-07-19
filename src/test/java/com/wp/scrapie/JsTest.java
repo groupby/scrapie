@@ -18,9 +18,10 @@ public class JsTest extends JsLoader {
 
 	@Test
 	public void testSimple() throws Exception {
+
 		server.setResource("/index.html?id=0", createWebPage("0", ""));
 		server.setResource("/index.html?id=1", createWebPage("1", ""));
-		StringWriter writer = run(new Js(), "src/test/js/iterateLow.js");
+		StringWriter writer = run(new Emitter(), "src/test/js/iterateLow.js");
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
 	}
@@ -29,21 +30,21 @@ public class JsTest extends JsLoader {
 	public void testRecord() throws Exception {
 		System.setProperty("workingDir", "src/test/java/");
 		server = null;
-		Js.setRecordCount(0);
-		Js.setRecord(1);
-		Js.setSourceFileName("iterateLow.js");
-		Js js = new Js();
+		Emitter.setRecordCount(0);
+		Emitter.setRecord(1);
+		Emitter.setSourceFileName("iterateLow.js");
+		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
-		js.run(IOUtils.toString(
+		emitter.run(IOUtils.toString(
 				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
 				"####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n", writer.getBuffer()
 				.toString());
-		Js.setRecord(2);
-		Js.setRecordCount(0);
-		js = new Js();
+		Emitter.setRecord(2);
+		Emitter.setRecordCount(0);
+		emitter = new Emitter();
 		writer = new StringWriter();
-		js.run(IOUtils.toString(
+		emitter.run(IOUtils.toString(
 				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
 				"####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n"
@@ -51,36 +52,50 @@ public class JsTest extends JsLoader {
 	}
 
 	@Test
+	public void testFileIterator() throws Exception {
+		System.setProperty("workingDir", "src/test/java/");
+		server = null;
+		Emitter.setRecordCount(0);
+		Emitter.setRecord(10);
+		Emitter.setSourceFileName("iterateFile.js");
+		Emitter emitter = new Emitter();
+		StringWriter writer = new StringWriter();
+		emitter.runFile("src/test/js/iterateFile.js", writer);
+		assertEquals("{\"title\":[\"title 0\"]}\n"
+				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
+	}
+
+	@Test
 	public void testEmit() throws Exception {
-		Js test = new Js();
-		Js.setWriter(new StringWriter());
+		Emitter test = new Emitter();
+		Emitter.setWriter(new StringWriter());
 		test.emit("key1", "value1");
-		Js.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", Js.getWriter().toString());
+		Emitter.flush();
+		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter().toString());
 	}
 
 	@Test
 	public void testEmitForWorkingId() throws Exception {
-		Js test = new Js();
+		Emitter test = new Emitter();
 		test.setWorkingId("someId");
-		Js.setWriter(new StringWriter());
+		Emitter.setWriter(new StringWriter());
 		test.emitForWorkingId("key1", "value1");
-		Js.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", Js.getWriter().toString());
+		Emitter.flush();
+		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter().toString());
 	}
 
 	@Test
 	public void testEmitForWorkingIdParentContext() throws Exception {
-		Js test = new Js();
-		Js parent = new Js();
+		Emitter test = new Emitter();
+		Emitter parent = new Emitter();
 		test.setParent(parent);
 		parent.setWorkingId("bob");
 		StringWriter writer = new StringWriter();
-		Js.setWriter(writer);
+		Emitter.setWriter(writer);
 		test.emitForWorkingId("key1", "value1");
 		parent.emitForWorkingId("key2", "value2");
-		Js.flush();
-		assertEquals("{\"key1\":[\"value1\"],\"key2\":[\"value2\"]}\n", Js
+		Emitter.flush();
+		assertEquals("{\"key1\":[\"value1\"],\"key2\":[\"value2\"]}\n", Emitter
 				.getWriter().toString());
 	}
 
@@ -95,7 +110,7 @@ public class JsTest extends JsLoader {
 				createWebPage("0", "<div id='price'>$49.99</div>"));
 		server.setResource("/detail.jsp?id=def",
 				createWebPage("0", "<div id='price'>$59.99</div>"));
-		StringWriter writer = run(new Js(), "src/test/js/iterateHigh.js");
+		StringWriter writer = run(new Emitter(), "src/test/js/iterateHigh.js");
 		assertEquals(
 				"{\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
 						+ "{\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
@@ -108,7 +123,7 @@ public class JsTest extends JsLoader {
 	@Test
 	public void testMedium() throws Exception {
 		createListPages();
-		StringWriter writer = run(new Js(), "src/test/js/iterateMedium.js");
+		StringWriter writer = run(new Emitter(), "src/test/js/iterateMedium.js");
 		assertEquals("{\"id\":[\"abc\"],\"title\":[\"link 1\"]}\n"
 				+ "{\"id\":[\"bcd\"],\"title\":[\"link 2\"]}\n"
 				+ "{\"id\":[\"cde\"],\"title\":[\"link 3\"]}\n"
