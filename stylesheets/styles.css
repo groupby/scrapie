@@ -853,3 +853,7 @@ section #title .credits.right {
     display: none;
   }
 }
+
+code {
+font-family:'courier new';
+}
