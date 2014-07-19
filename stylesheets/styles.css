@@ -180,11 +180,15 @@ a:active {
 h1 {
   font-size: 2em;
   margin: 0.67em 0;
+  padding-bottom:19px;
+  border-bottom:2px solid green;
 }
 
 h2 {
   font-size: 1.5em;
   margin: 0.83em 0;
+  padding-bottom:5px;
+  border-bottom:1px solid gray;
 }
 
 h3 {

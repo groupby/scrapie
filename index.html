@@ -21,8 +21,7 @@
       <div id="header">
         <nav>
           <li class="fork"><a href="https://github.com/groupby/scrapie">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/groupby/scrapie/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/groupby/scrapie/tarball/master">TAR</a></li>
+          <li class="downloads"><a href="https://github.com/groupby/scrapie/blob/master/scrapie-latest.zip?raw=true">ZIP</a></li>
           <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
@@ -30,28 +29,24 @@
     <div class="wrapper">
 
       <section>
-        <div id="title">
-          <h1>Scrapie</h1>
-          <p>Web Scraper</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/groupby">groupby</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+        
 
         <h1>
 <a name="-scrapie" class="anchor" href="#-scrapie"><span class="octicon octicon-link"></span></a>
-<img src="src/main/images/sheepVerySmall.png" alt="Scrapie"> Scrapie</h1>
+<img src="https://github.com/groupby/scrapie/raw/master/src/main/images/sheepVerySmall.png" alt="Scrapie"> Scrapie</h1>
 
 <p>A Web Scraper.<br><em>Not the fatal, degenerative disease that affects the nervous systems of sheep and goats.</em></p>
 
-<p><a href="https://codeship.io/projects/27011"> <img src="https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status" alt="Codeship Status for groupby/scrapie"></a> <a href="https://waffle.io/groupby/scrapie"><img src="https://badge.waffle.io/groupby/scrapie.png?label=ready&amp;title=Ready" alt="Stories in Ready"></a></p>
-
+<p><a href="https://codeship.io/projects/27011">
+<img height="20" src="https://codeship.io/projects/1df14350-ef55-0131-b5ae-023491d184db/status" alt="Codeship Status for groupby/scrapie"></a> <a href="https://waffle.io/groupby/scrapie">
+<img height="20" src="https://badge.waffle.io/groupby/scrapie.png?label=ready&amp;title=Ready" alt="Stories in Ready"></a></p>
+<br></br>
 <h2>
 <a name="quickstart" class="anchor" href="#quickstart"><span class="octicon octicon-link"></span></a>Quickstart</h2>
 
 <ol>
 <li>Make sure Java 1.7 is on your computer and the java command is on your path.</li>
-<li>Download the <a href="scrapie-latest.zip?raw=true">scrapie-latest.zip</a> </li>
+<li>Download the <a href="https://github.com/groupby/scrapie/blob/master/scrapie-latest.zip?raw=true">scrapie-latest.zip</a> </li>
 <li>Unpack it <code>scrapie-x.x.x</code> and go into the directory <code>cd scrapie-x.x.x</code>
 </li>
 <li>run the test 
@@ -62,27 +57,36 @@
 <li>on windows <code>scrapie.bat -f google.js -o google.xml</code> </li>
 </ul>
 </li>
-</ol><h2>
+</ol>
+<br></br>
+<h2>
 <a name="docs" class="anchor" href="#docs"><span class="octicon octicon-link"></span></a>Docs</h2>
 
-<p>Read the <a href="API.md">API.md</a> and the <a href="Emitter.md">Emitter.md</a> to learn about scrapie.</p>
+<p>Read the <a href="https://github.com/groupby/scrapie/blob/master/API.md">API.md</a> and the <a href="https://github.com/groupby/scrapie/blob/master/Emitter.md">Emitter.md</a> to learn about scrapie.</p>
 
+<br></br>
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>Requires that Java 1.7 is installed and on your path.</p>
 
-<pre><code>usage: scrapie
+<pre style="font-family:'courier new'">usage: scrapie
  -f,--file &lt;arg&gt;        The JavaScript file to use
  -o,--output &lt;arg&gt;      The file to output to
- -r,--record &lt;arg&gt;      Record this run and stop after N records have been emitted
+ -r,--record &lt;arg&gt;      Record this run and stop after N records
+                        have been emitted
  -t,--type &lt;arg&gt;        The record type, json or xml (default)
  -v,--verbosity &lt;arg&gt;   Log Level, trace, debug, info (default)
-</code></pre>
+</pre>
 
-<pre><code>./scrapie -f myScraper.js -o records.xml
-</code></pre>
+Unix
+<pre style="font-family:'courier new'">./scrapie -f myScraper.js -o records.xml
+</pre>
+Or windows
+<pre style="font-family:'courier new'">scrapie.bat -f myScraper.js -o records.xml
+</pre>
 
+<br></br>
 <h2>
 <a name="examples-scraper-files" class="anchor" href="#examples-scraper-files"><span class="octicon octicon-link"></span></a>Examples Scraper Files</h2>
 
@@ -163,6 +167,7 @@
 <span class="p">}</span>
 </pre></div>
 
+<br></br>
 <h2>
 <a name="goals" class="anchor" href="#goals"><span class="octicon octicon-link"></span></a>Goals</h2>
 
@@ -176,7 +181,10 @@
 <li>must be able to resuse global items across pages.  Maybe back multiple pages.</li>
 <li>the syntax must be as small as possible.</li>
 <li>be threaded (which it isn't yet)</li>
-</ul><h2>
+</ul>
+
+<br></br>
+<h2>
 <a name="choices" class="anchor" href="#choices"><span class="octicon octicon-link"></span></a>Choices</h2>
 
 <p>Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.<br>
