@@ -14,11 +14,13 @@ Because the scraper files are JavaScript you have a lot of power to do lots of t
 would otherwise normally have to do in an ETL type process.
 
 
-The [Js.java](src/main/java/com/wp/scrapie/Js.java)  Object is the communication bridge back 
-to the Java world.  This is the object that fetches the web documents.  The Js object is put
-into the JavaScript context as a variable you can access called emitter.
+The [Emitter.java](src/main/java/com/wp/scrapie/Emitter.java)  Object is the communication bridge back 
+to the Java world.  This is the object that fetches the web documents.  The Emitter object is put
+into the JavaScript context as a variable you can access called emitter.  Whenever you're given a 
+context object, you're getting a wrapped instance of emitter with access to all the parts of the Emitter class
+that you need, plus some JavaScript wrappings that make closure possible.
 
-Two other objects are put into the scope.  
+Other JavaScript classes and functions are available.  
 
 - [EmitterWrapper.js](src/main/js/EmitterWrapper.js), which wraps the Emitter object to give it some more useful JavaScripty syntax.
 - [FileIterator.js](src/main/js/FileIterator.js), JavaScript backing to a FileLineIterator   
