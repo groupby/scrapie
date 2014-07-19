@@ -854,6 +854,6 @@ section #title .credits.right {
   }
 }
 
-code {
+code, pre, pre span {
 font-family:'courier new';
 }
