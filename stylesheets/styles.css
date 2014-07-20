@@ -855,5 +855,9 @@ section #title .credits.right {
 }
 
 code, pre, pre span {
-font-family:'courier new';
+	font-family:'courier new';
+}
+
+#header {
+	opacity:0.9;
 }
