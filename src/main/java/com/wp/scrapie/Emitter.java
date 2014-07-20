@@ -207,6 +207,10 @@ public class Emitter implements EmitterWrapper {
 	 * 
 	 * <code>
 	 * 
+	 * Method finds all the anchor tags that match the query.  For each
+	 * anchor tag the URL is loaded and a new Emitter object is created 
+	 * and passed back into into the dealWith function.
+	 * 
 	 * ```JavaScript
 	 * pContext.processUrlsJq("a", function(pContext){
 	 *     // do some scraping
