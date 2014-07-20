@@ -400,25 +400,24 @@ public class Emitter implements EmitterWrapper {
 	 * @param pValue
 	 *            The value of the property.
 	 */
-	public void emit(String pKey, String... pValue) {
-		List<String> listValues = new ArrayList<String>();
+	public void emit(String pKey, Object... pValue) {
+		List<Object> listValues = new ArrayList<Object>();
 		if (pValue == null) {
 			return;
 		}
-		for (String value : pValue) {
+		for (Object value : pValue) {
 			listValues.add(value);
 		}
 		emit(pKey, listValues);
 	}
 
 	/**
-	 * 
-	 * @internal
 	 * @param pKey
+	 *            The name of the property to emit
 	 * @param pValue
+	 *            The value of the property.
 	 */
-	@DontGenerate
-	public void emit(String pKey, List<String> pValue) {
+	public void emit(String pKey, List<Object> pValue) {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("emitting: " + pKey + ": " + pValue);
 		}
@@ -431,14 +430,14 @@ public class Emitter implements EmitterWrapper {
 	}
 
 	private void addKeyValue(Map<String, Set<String>> map, String pKey,
-			List<String> pValue) {
+			List<Object> pValue) {
 		if (!map.containsKey(pKey)) {
 			Set<String> listItems = new TreeSet<String>();
 			map.put(pKey, listItems);
 		}
-		for (String value : pValue) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml(value)
-					.replaceAll(" ", " ").trim();
+		for (Object value : pValue) {
+			String unescapedValue = StringEscapeUtils
+					.unescapeHtml(value.toString()).replaceAll(" ", " ").trim();
 			if (!excludeValues.contains(unescapedValue)) {
 				map.get(pKey).add(unescapedValue);
 			}
@@ -464,19 +463,9 @@ public class Emitter implements EmitterWrapper {
 	 * @param pValue
 	 *            The value of the property.
 	 */
-	public void emitForWorkingId(String pKey, String pValue) {
-		emitForWorkingId(pKey, java.util.Arrays.asList(pValue));
-	}
-
-	/**
-	 * @internal <code>
-	 * Same as `emitForWorkingId()` but takes an array of values
-	 * </code>
-	 */
-	@DontGenerate
-	public void emitForWorkingId(String pKey, String... pValue) {
-		List<String> listValues = new ArrayList<String>();
-		for (String value : listValues) {
+	public void emitForWorkingId(String pKey, Object... pValue) {
+		List<Object> listValues = new ArrayList<Object>();
+		for (Object value : pValue) {
 			listValues.add(value);
 		}
 		emitForWorkingId(pKey, listValues);
@@ -514,14 +503,12 @@ public class Emitter implements EmitterWrapper {
 	}
 
 	/**
-	 * @internal
-	 * 
-	 *           <code>
+	 * <code>
 	 * Same as `emitForWorkingId()` but takes a list of values 
 	 * </code>
 	 */
 	@DontGenerate
-	public void emitForWorkingId(String pKey, List<String> pValue) {
+	public void emitForWorkingId(String pKey, List<Object> pValue) {
 		Emitter current = this;
 		while (current != null) {
 			if (current.getWorkingId() != null) {
@@ -706,6 +693,36 @@ public class Emitter implements EmitterWrapper {
 		}
 		return texts;
 	}
+	
+	
+	/**
+	 * <code>
+	 * Rather than returning the text associated with a desired element or elements
+	 * return a specific attribute from each element as a list.
+	 * </code>
+	 * 
+	 * @param pQuery
+	 *            The XPath query to the elements desired.
+	 * @param pAttr
+	 *            The attribute to retrieve from each element.
+	 * @return A list of strings of the elements that had this attribute and the
+	 *         attribute value.
+	 * @throws JaxenException 
+	 */
+	public List<String> getXPathAttr(String pQuery, String pAttr) throws JaxenException {
+		List<Node> elements = document.select(new JsoupXPath(pQuery));
+		if (elements == null || elements.size() == 0) {
+			return new ArrayList<String>();
+		}
+		List<String> results = new ArrayList<>();
+		for (Node element : elements) {
+			if (element.hasAttr(pAttr)) {
+				results.add(element.attr(pAttr));
+			}
+		}
+		return results;
+	}
+
 
 	/**
 	 * <code>

@@ -17,8 +17,10 @@ Java method at runtime.
 ###Methods
 - [addExcludeValue(String pValue)](#1526343849) 
 - [breakIntoSections(String pQuery, Function pDealWith)](#907510991) 
-- [emit(String pKey, String pValue)](#-411319946) 
-- [emitForWorkingId(String pKey, String pValue)](#712847353) 
+- [emit(String pKey, List pValue)](#856545347) 
+- [emit(String pKey, Object... pValue)](#-418495782) 
+- [emitForWorkingId(String pKey, List pValue)](#294587270) 
+- [emitForWorkingId(String pKey, Object... pValue)](#1789501815) 
 - [flush()](#-760377595) 
 - [getCookies()](#216551706)  returns Map
 - [getDocument()](#-1112689838)  returns org.jsoup.nodes.Element
@@ -33,9 +35,10 @@ Java method at runtime.
 - [getSourceFileName()](#-205233319)  returns String
 - [getWorkingId()](#-511304457)  returns String
 - [getXPath(String pQuery)](#1521535043)  returns List
+- [getXPathAttr(String pQuery, String pAttr)](#-859866804)  returns List
 - [getXPathText(String pQuery)](#2138633942)  returns List
 - [load(String pUrl)](#410534269) 
-- [login(String pUrl, String pKeyValues)](#-1781132244) 
+- [login(String pUrl, String... pKeyValues)](#-1609977486) 
 - [print(String pMessage)](#1272621438) 
 - [printDocument()](#-994781719) 
 - [processUrlsJq(String pQuery, Function pDealWith)](#405324898) 
@@ -73,7 +76,13 @@ var sections = pContext.breakIntoSections(".item", function(pContext){
 
 
 
-#### <a style="font-size:16px;" name="-411319946">emit</a><span style="font-size:16px;">(String pKey, String pValue)</span>
+#### <a style="font-size:16px;" name="856545347">emit</a><span style="font-size:16px;">(String pKey, List pValue)</span>
+- <b>pKey</b>: 
+           The name of the property to emit
+- <b>pValue</b>: 
+           The value of the property.
+
+#### <a style="font-size:16px;" name="-418495782">emit</a><span style="font-size:16px;">(String pKey, Object... pValue)</span>
 - <b>pKey</b>: 
            The name of the property to emit
 - <b>pValue</b>: 
@@ -84,7 +93,13 @@ that is flushed to disk when `flush()` is called.
 
 
 
-#### <a style="font-size:16px;" name="712847353">emitForWorkingId</a><span style="font-size:16px;">(String pKey, String pValue)</span>
+#### <a style="font-size:16px;" name="294587270">emitForWorkingId</a><span style="font-size:16px;">(String pKey, List pValue)</span>
+
+Same as `emitForWorkingId()` but takes a list of values 
+
+
+
+#### <a style="font-size:16px;" name="1789501815">emitForWorkingId</a><span style="font-size:16px;">(String pKey, Object... pValue)</span>
 - <b>pKey</b>: 
            The name of the property to emit
 - <b>pValue</b>: 
@@ -216,6 +231,19 @@ the text nodes as well as elements.
 
 
 
+#### <span style="font-size:12px;color:#AAAAAA">List&lt;String&gt;</span> <a style="font-size:16px;" name="-859866804">getXPathAttr</a><span style="font-size:16px;">(String pQuery, String pAttr)</span>
+- <b>pQuery</b>: 
+           The XPath query to the elements desired.
+- <b>pAttr</b>: 
+           The attribute to retrieve from each element.
+- <b>returns</b>: A list of strings of the elements that had this attribute and the
+        attribute value.
+
+Rather than returning the text associated with a desired element or elements
+return a specific attribute from each element as a list.
+
+
+
 #### <span style="font-size:12px;color:#AAAAAA">List&lt;String&gt;</span> <a style="font-size:16px;" name="2138633942">getXPathText</a><span style="font-size:16px;">(String pQuery)</span>
 - <b>pQuery</b>: 
            The XPath expression to evaluate.
@@ -236,7 +264,7 @@ Also see the get* methods that pull data from this document.
 
 
 
-#### <a style="font-size:16px;" name="-1781132244">login</a><span style="font-size:16px;">(String pUrl, String pKeyValues)</span>
+#### <a style="font-size:16px;" name="-1609977486">login</a><span style="font-size:16px;">(String pUrl, String... pKeyValues)</span>
 - <b>pUrl</b>: 
            The URL to submit the login to.
 - <b>pKeyValues</b>: 

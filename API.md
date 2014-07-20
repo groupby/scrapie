@@ -27,6 +27,14 @@ Other JavaScript classes and functions are available.
 - [GlobalFunctions.js](src/main/resources/GlobalFunctions.js), some useful methods like print()
 - [UrlIterator.js](src/main/resources/UrlIterator.js), which you can implement to generate URLs.
 
+Everything that is scraped and emitted is emitted as a list.  If you emit the same key multiple times
+they will be added to the existing list element.  Blank entries and duplicates are removed.
+Thus, when you save to a JSON format it will look like this:
+
+```JavaScript
+{ "id":["myId"],"title":["my title"],"location":["Toronto","Vancouver"]}
+```
+
 
 Example Usage
 -----

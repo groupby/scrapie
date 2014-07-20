@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 
-public class JsTest extends JsLoader {
+public class EmitterTest extends JsLoader {
 
 	@Rule
 	public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties(
@@ -35,18 +35,20 @@ public class JsTest extends JsLoader {
 		Emitter.setSourceFileName("iterateLow.js");
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
-		emitter.run(IOUtils.toString(
-				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
-				"####", "80"), writer);
+		emitter.run(
+				IOUtils.toString(
+						new FileInputStream("src/test/js/iterateLow.js"))
+						.replaceAll("####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n", writer.getBuffer()
 				.toString());
 		Emitter.setRecord(2);
 		Emitter.setRecordCount(0);
 		emitter = new Emitter();
 		writer = new StringWriter();
-		emitter.run(IOUtils.toString(
-				new FileInputStream("src/test/js/iterateLow.js")).replaceAll(
-				"####", "80"), writer);
+		emitter.run(
+				IOUtils.toString(
+						new FileInputStream("src/test/js/iterateLow.js"))
+						.replaceAll("####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
 	}
@@ -71,7 +73,8 @@ public class JsTest extends JsLoader {
 		Emitter.setWriter(new StringWriter());
 		test.emit("key1", "value1");
 		Emitter.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter().toString());
+		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter()
+				.toString());
 	}
 
 	@Test
@@ -81,7 +84,8 @@ public class JsTest extends JsLoader {
 		Emitter.setWriter(new StringWriter());
 		test.emitForWorkingId("key1", "value1");
 		Emitter.flush();
-		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter().toString());
+		assertEquals("{\"key1\":[\"value1\"]}\n", Emitter.getWriter()
+				.toString());
 	}
 
 	@Test
@@ -112,10 +116,10 @@ public class JsTest extends JsLoader {
 				createWebPage("0", "<div id='price'>$59.99</div>"));
 		StringWriter writer = run(new Emitter(), "src/test/js/iterateHigh.js");
 		assertEquals(
-				"{\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
-						+ "{\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
-						+ "{\"id\":[\"cde\"],\"price\":[\"$49.99\"],\"title\":[\"link 3\"]}\n"
-						+ "{\"id\":[\"def\"],\"price\":[\"$59.99\"],\"title\":[\"link 4\"]}\n",
+				"{\"href\":[\"/detail.jsp?id=abc\"],\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
+						+ "{\"href\":[\"/detail.jsp?id=bcd\"],\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
+						+ "{\"href\":[\"/detail.jsp?id=cde\"],\"id\":[\"cde\"],\"price\":[\"$49.99\"],\"title\":[\"link 3\"]}\n"
+						+ "{\"href\":[\"/detail.jsp?id=def\"],\"id\":[\"def\"],\"price\":[\"$59.99\"],\"title\":[\"link 4\"]}\n",
 				writer.getBuffer().toString());
 
 	}

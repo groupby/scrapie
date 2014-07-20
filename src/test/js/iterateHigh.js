@@ -6,7 +6,6 @@ var urlIterator = new UrlIterator(function(pIndex){
 	 }
 });
 urlIterator.forEach(function(pContext) {
-	print(pContext.getHtml());
     pContext.breakIntoSections(".item", function(pContext){
      	var workingId = pContext.getJq("a").attr("href").split("=")[1];
     	pContext.setWorkingId(workingId);
@@ -22,6 +21,7 @@ urlIterator.forEach(function(pContext) {
 
 function processListItem(pContext){
     pContext.emitForWorkingId("title", pContext.getJqText("a"));
+    pContext.emitForWorkingId("href", pContext.getXPathAttr("a", "href"));
 }
 
 function processDetailPage(pContext){

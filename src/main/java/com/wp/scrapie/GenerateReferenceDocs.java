@@ -315,7 +315,8 @@ public class GenerateReferenceDocs {
 		StringBuilder result = new StringBuilder("(");
 		for (int i = 0; i < pList.size(); i++) {
 			JavaParameter param = pList.get(i);
-			result.append(param.getType().toString() + " ");
+			result.append(param.getType().toString()
+					+ (param.isVarArgs() ? "... " : " "));
 			result.append(param.getName());
 			if (i < pList.size() - 1) {
 				result.append(", ");
