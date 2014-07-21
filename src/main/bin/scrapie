@@ -8,4 +8,4 @@ CYGWIN*)
   CURRENT=`cygpath -w $CURRENT`
 ;;
 esac
-java -DworkingDir="$CURRENT" -jar "$JAR" "$@"
+java -DworkingDir="$CURRENT/" -jar "$JAR" "$@"

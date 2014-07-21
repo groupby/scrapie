@@ -488,12 +488,8 @@ public class Emitter implements EmitterWrapper {
 		Matcher matcher = p.matcher(document.toString());
 		while (matcher.find()) {
 			String group0 = matcher.group();
-			System.out.println(group0);
-			System.out.println("email: " + pPattern + " "
-					+ matcher.groupCount());
 			if (matcher.groupCount() > 1) {
 				group0 = matcher.group(1);
-				System.out.println(group0);
 			}
 			if (StringUtils.isNotBlank(group0)) {
 				results.add(group0);
@@ -693,8 +689,7 @@ public class Emitter implements EmitterWrapper {
 		}
 		return texts;
 	}
-	
-	
+
 	/**
 	 * <code>
 	 * Rather than returning the text associated with a desired element or elements
@@ -707,9 +702,10 @@ public class Emitter implements EmitterWrapper {
 	 *            The attribute to retrieve from each element.
 	 * @return A list of strings of the elements that had this attribute and the
 	 *         attribute value.
-	 * @throws JaxenException 
+	 * @throws JaxenException
 	 */
-	public List<String> getXPathAttr(String pQuery, String pAttr) throws JaxenException {
+	public List<String> getXPathAttr(String pQuery, String pAttr)
+			throws JaxenException {
 		List<Node> elements = document.select(new JsoupXPath(pQuery));
 		if (elements == null || elements.size() == 0) {
 			return new ArrayList<String>();
@@ -722,7 +718,6 @@ public class Emitter implements EmitterWrapper {
 		}
 		return results;
 	}
-
 
 	/**
 	 * <code>
@@ -788,7 +783,7 @@ public class Emitter implements EmitterWrapper {
 		String cacheDir = createCacheDir();
 		File hashFile = new File(cacheDir
 				+ DigestUtils.md5Hex(extractSaliantParts(pUrl))
-				+ describe(pUrl) + ".txt");
+				+ describe(pUrl) + ".html");
 		if (isRecord() && hashFile.exists()) {
 			File tmp = new File(cacheDir);
 			if (LOG.isDebugEnabled()) {
@@ -824,8 +819,7 @@ public class Emitter implements EmitterWrapper {
 	}
 
 	private String createCacheDir() {
-		return System.getProperty("workingDir", "") + "." + sourceFileName
-				+ "_data/";
+		return sourceDirectory + "/" + sourceFileName + "_data/";
 	}
 
 	private String describe(String pUrl) {
