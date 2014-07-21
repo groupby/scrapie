@@ -2,9 +2,11 @@ package com.wp.scrapie;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringWriter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,11 +30,15 @@ public class EmitterTest extends JsLoader {
 
 	@Test
 	public void testRecord() throws Exception {
-		System.setProperty("workingDir", "src/test/java/");
+		Emitter.setRecordCount(0);
+		Emitter.setRecord(2);
+		Emitter.setSourceFileName("iterateLow.js");
+		Emitter.setSourceDirectory(new File("target/"));
+		testSimple();
+
 		server = null;
 		Emitter.setRecordCount(0);
 		Emitter.setRecord(1);
-		Emitter.setSourceFileName("iterateLow.js");
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
 		emitter.run(
@@ -41,6 +47,7 @@ public class EmitterTest extends JsLoader {
 						.replaceAll("####", "80"), writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n", writer.getBuffer()
 				.toString());
+
 		Emitter.setRecord(2);
 		Emitter.setRecordCount(0);
 		emitter = new Emitter();
@@ -55,14 +62,21 @@ public class EmitterTest extends JsLoader {
 
 	@Test
 	public void testFileIterator() throws Exception {
-		System.setProperty("workingDir", "src/test/java/");
+		Emitter.setRecordCount(0);
+		Emitter.setRecord(10);
+		Emitter.setSourceFileName("iterateFile.js");
+		Emitter.setSourceDirectory(new File("target/"));
+		testSimple();
+
 		server = null;
 		Emitter.setRecordCount(0);
 		Emitter.setRecord(10);
 		Emitter.setSourceFileName("iterateFile.js");
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
-		emitter.runFile("src/test/js/iterateFile.js", writer);
+		FileUtils.copyFile(new File("src/test/js/iterateFile.js")	,new File("target/iterateFile.js"));
+		FileUtils.copyFile(new File("src/test/js/idList.txt")	,new File("target/idList.txt"));
+		emitter.runFile("target/iterateFile.js", writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
 	}

@@ -785,18 +785,14 @@ public class Emitter implements EmitterWrapper {
 				+ DigestUtils.md5Hex(extractSaliantParts(pUrl))
 				+ describe(pUrl) + ".html");
 		if (isRecord() && hashFile.exists()) {
-			File tmp = new File(cacheDir);
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("ensuring dir exists: " + tmp.getAbsolutePath());
-			}
-			tmp.mkdirs();
-
+			ensureCacheDirExists(cacheDir);
 			newDocument = Jsoup.parse(hashFile, "UTF8");
 			newDocument.setBaseUri(pUrl);
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Loaded from cache");
 			}
 		} else {
+			ensureCacheDirExists(cacheDir);
 			Connection connection = createConnection(pUrl);
 			connection.data(pKeyValues);
 			Connection.Response res = connection.method(method).execute();
@@ -808,6 +804,14 @@ public class Emitter implements EmitterWrapper {
 			}
 		}
 		return newDocument;
+	}
+
+	private void ensureCacheDirExists(String cacheDir) {
+		File tmp = new File(cacheDir);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("ensuring dir exists: " + tmp.getAbsolutePath());
+		}
+		tmp.mkdirs();
 	}
 
 	private String extractSaliantParts(String pUrl) {
@@ -1092,6 +1096,15 @@ public class Emitter implements EmitterWrapper {
 	@DontGenerate
 	public static void setSourceFileName(String pSourceFileName) {
 		sourceFileName = pSourceFileName;
+	}
+
+	/**
+	 * @internal
+	 * @param pSourceDirectory
+	 */
+	@DontGenerate
+	public static void setSourceDirectory(File pSourceDirectory) {
+		sourceDirectory = pSourceDirectory;
 	}
 
 }
