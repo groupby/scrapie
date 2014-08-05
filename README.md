@@ -124,7 +124,7 @@ A scraper that will generate URLs to crawl and convert them into objects we want
 - must not use XML configuration as using XML to parse HTML is an escaping nightmare.
 - must understand the concept of multiple of the same objects being created from one big page.
 - must be able to log in to password protected sites.
-- must be able to understand the concpet of a listing page that goes to a detail page to generate the object or objects.
+- must be able to understand the concept of a listing page that goes to a detail page to generate the object or objects.
 - must be able to resuse global items across pages.  Maybe back multiple pages.
 - the syntax must be as small as possible.
 - be threaded (which it isn't yet)
