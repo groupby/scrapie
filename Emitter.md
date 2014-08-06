@@ -16,10 +16,10 @@ Java method at runtime.
 
 ###Methods
 - [addExcludeValue(String pValue)](#1526343849) 
-- [breakIntoSections(String pQuery, Function pDealWith)](#907510991) 
+- [breakIntoSections(String pQuery, Function pDealWith)](#907510991)
 - [emit(String pKey, List pValue)](#856545347) 
 - [emit(String pKey, Object... pValue)](#-418495782) 
-- [emitForWorkingId(String pKey, List pValue)](#294587270) 
+- [emitForWorkingId(String pKey, List pValue)](#294587270)
 - [emitForWorkingId(String pKey, Object... pValue)](#1789501815) 
 - [flush()](#-760377595) 
 - [getCookies()](#216551706)  returns Map
@@ -33,6 +33,7 @@ Java method at runtime.
 - [getReText(String pPattern)](#-1271561236)  returns List
 - [getRecord()](#1278664328)  returns int
 - [getSourceFileName()](#-205233319)  returns String
+- [getUrl()](#1967378682)  returns String
 - [getWorkingId()](#-511304457)  returns String
 - [getXPath(String pQuery)](#1521535043)  returns List
 - [getXPathAttr(String pQuery, String pAttr)](#-859866804)  returns List
@@ -43,6 +44,7 @@ Java method at runtime.
 - [printDocument()](#-994781719) 
 - [processUrlsJq(String pQuery, Function pDealWith)](#405324898) 
 - [setRecord(int pRecord)](#-1092772818) 
+- [setUrl(String pUrl)](#-1399905258) 
 - [setWorkingId(String workingId)](#-1064871666) 
 
 
@@ -214,6 +216,13 @@ stop when we have flushed that number of records.
 #### <span style="font-size:12px;color:#AAAAAA">String</span> <a style="font-size:16px;" name="-205233319">getSourceFileName</a><span style="font-size:16px;">()</span>
 - <b>returns</b>: The filename
 
+#### <span style="font-size:12px;color:#AAAAAA">String</span> <a style="font-size:16px;" name="1967378682">getUrl</a><span style="font-size:16px;">()</span>
+- <b>returns</b>: The URL that the current block is contained by.
+
+Search up the parent chain for the first URL that this block is contained by.
+
+
+
 #### <span style="font-size:12px;color:#AAAAAA">String</span> <a style="font-size:16px;" name="-511304457">getWorkingId</a><span style="font-size:16px;">()</span>
 - <b>returns</b>: Get the working ID.
 
@@ -322,6 +331,14 @@ Set the number of records to emit. This also tells the URL loader to
 write each request to disk and cache them so when you run this scraper again,
 it will hit disk and not the internet.  Good when you need to quickly iterate
 through trials of your CSS/XPath/RegEx selectors.
+
+
+
+#### <a style="font-size:16px;" name="-1399905258">setUrl</a><span style="font-size:16px;">(String pUrl)</span>
+- <b>pUrl</b>: 
+           The URL to set.
+
+Set the URL for the current emitter.  Generally set when a document is loaded.
 
 
 

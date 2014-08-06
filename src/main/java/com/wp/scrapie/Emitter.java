@@ -66,7 +66,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * </code>
  * 
  * @author will
- *
+ * 
  */
 public class Emitter implements EmitterWrapper {
 
@@ -91,6 +91,8 @@ public class Emitter implements EmitterWrapper {
 	private static Map<String, String> cookies = new HashMap<String, String>();
 
 	private Map<String, String> postData = new HashMap<>();
+
+	private String url = null;
 
 	private static File sourceDirectory;
 
@@ -262,7 +264,7 @@ public class Emitter implements EmitterWrapper {
 					url = baseUri.substring(0, baseUri.indexOf("/", 10)) + url;
 				}
 				Emitter emitter = new Emitter();
-				emitter.setDocument(loadUrl(url));
+				emitter.load(url);
 				emitter.setParent(this);
 				pages.add(emitter);
 			} else {
@@ -387,6 +389,33 @@ public class Emitter implements EmitterWrapper {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * <code>
+	 * Search up the parent chain for the first URL that this block is contained by.
+	 * </code>
+	 * 
+	 * @return The URL that the current block is contained by.
+	 */
+	public String getUrl() {
+		if (url == null) {
+			return parent.getUrl();
+		} else {
+			return url;
+		}
+	}
+
+	/**
+	 * <code>
+	 * Set the URL for the current emitter.  Generally set when a document is loaded.
+	 * </code>
+	 * 
+	 * @param pUrl
+	 *            The URL to set.
+	 */
+	public void setUrl(String pUrl) {
+		url = pUrl;
 	}
 
 	/**
@@ -731,6 +760,7 @@ public class Emitter implements EmitterWrapper {
 	 */
 	public void load(String pUrl) throws IOException {
 		document = loadUrl(pUrl);
+		url = pUrl;
 	}
 
 	/**
@@ -764,7 +794,7 @@ public class Emitter implements EmitterWrapper {
 		Method method = Method.GET;
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("----------------------");
-			LOG.trace("nJs.loadUrl() started");
+			LOG.trace("Emitter.loadUrl() started");
 		}
 		if (LOG.isInfoEnabled()) {
 			LOG.info("Loading Url: " + pUrl);
@@ -848,7 +878,7 @@ public class Emitter implements EmitterWrapper {
 		connection.timeout(40000);
 		connection.referrer("");
 		connection.followRedirects(true);
-		connection.ignoreHttpErrors(true);
+		// connection.ignoreHttpErrors(true);
 		connection.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) "
 				+ "AppleWebKit/537.36 (KHTML, like Gecko) "
 				+ "Chrome/35.0.1916.153 Safari/537.36");
@@ -860,7 +890,11 @@ public class Emitter implements EmitterWrapper {
 		}
 		if (cookies != null && !cookies.isEmpty()) {
 			printCookies("Sending", cookies);
-			connection.cookies(cookies);
+			Set<Entry<String, String>> entrySet = cookies.entrySet();
+			for (Entry<String, String> entry : entrySet) {
+				connection.cookie(entry.getKey(), entry.getValue());
+
+			}
 		}
 		return connection;
 	}

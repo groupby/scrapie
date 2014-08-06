@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 
 import org.apache.commons.io.FileUtils;
@@ -26,6 +27,17 @@ public class EmitterTest extends JsLoader {
 		StringWriter writer = run(new Emitter(), "src/test/js/iterateLow.js");
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
+	}
+
+	@Test
+	public void testGetUrl() throws Exception {
+		server.setResource("/index.html?id=0", createWebPage("0", ""));
+		server.setResource("/index.html?id=1", createWebPage("1", ""));
+		StringWriter writer = run(new Emitter(), "src/test/js/iterateLowUrl.js");
+		assertEquals("{\"url\":[\"http://localhost:" + getPort()
+				+ "/index.html?id=0\"]}\n" + "{\"url\":[\"http://localhost:"
+				+ getPort() + "/index.html?id=1\"]}\n", writer.getBuffer()
+				.toString());
 	}
 
 	@Test
@@ -74,8 +86,10 @@ public class EmitterTest extends JsLoader {
 		Emitter.setSourceFileName("iterateFile.js");
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
-		FileUtils.copyFile(new File("src/test/js/iterateFile.js")	,new File("target/iterateFile.js"));
-		FileUtils.copyFile(new File("src/test/js/idList.txt")	,new File("target/idList.txt"));
+		FileUtils.copyFile(new File("src/test/js/iterateFile.js"), new File(
+				"target/iterateFile.js"));
+		FileUtils.copyFile(new File("src/test/js/idList.txt"), new File(
+				"target/idList.txt"));
 		emitter.runFile("target/iterateFile.js", writer);
 		assertEquals("{\"title\":[\"title 0\"]}\n"
 				+ "{\"title\":[\"title 1\"]}\n", writer.getBuffer().toString());
@@ -130,12 +144,32 @@ public class EmitterTest extends JsLoader {
 				createWebPage("0", "<div id='price'>$59.99</div>"));
 		StringWriter writer = run(new Emitter(), "src/test/js/iterateHigh.js");
 		assertEquals(
-				"{\"href\":[\"/detail.jsp?id=abc\"],\"id\":[\"abc\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
-						+ "{\"href\":[\"/detail.jsp?id=bcd\"],\"id\":[\"bcd\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
-						+ "{\"href\":[\"/detail.jsp?id=cde\"],\"id\":[\"cde\"],\"price\":[\"$49.99\"],\"title\":[\"link 3\"]}\n"
-						+ "{\"href\":[\"/detail.jsp?id=def\"],\"id\":[\"def\"],\"price\":[\"$59.99\"],\"title\":[\"link 4\"]}\n",
+				"{\"detailUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/detail.jsp?id=abc\"],\"href\":[\"/detail.jsp?id=abc\"],\"id\":[\"abc\"],\"listUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/list?page=0\"],\"price\":[\"$29.99\"],\"title\":[\"link 1\"]}\n"
+						+ "{\"detailUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/detail.jsp?id=bcd\"],\"href\":[\"/detail.jsp?id=bcd\"],\"id\":[\"bcd\"],\"listUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/list?page=0\"],\"price\":[\"$39.99\"],\"title\":[\"link 2\"]}\n"
+						+ "{\"detailUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/detail.jsp?id=cde\"],\"href\":[\"/detail.jsp?id=cde\"],\"id\":[\"cde\"],\"listUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/list?page=1\"],\"price\":[\"$49.99\"],\"title\":[\"link 3\"]}\n"
+						+ "{\"detailUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/detail.jsp?id=def\"],\"href\":[\"/detail.jsp?id=def\"],\"id\":[\"def\"],\"listUrl\":[\"http://localhost:"
+						+ getPort()
+						+ "/list?page=1\"],\"price\":[\"$59.99\"],\"title\":[\"link 4\"]}\n",
 				writer.getBuffer().toString());
 
+	}
+
+	private int getPort() throws IOException {
+		return server.getConnectedPort();
 	}
 
 	@Test
@@ -169,4 +203,5 @@ public class EmitterTest extends JsLoader {
 		return "<html><head>" + "<title>title " + pTitle + "</title>"
 				+ "</head><body>" + pBody + "</body></html>";
 	}
+
 }
