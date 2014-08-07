@@ -36,7 +36,7 @@ public class Driver {
 				"Record this run and stop after N records have been emmited");
 		Option typeOption = new Option("t", "type", true,
 				"The record type, json or xml (default)");
-		Option noCacheLoginOption = new Option("l", "noCacheLogin", true,
+		Option noCacheLoginOption = new Option("c", "cachelessLogin", true,
 				"Always go online for login attempts so that cookies are retrieved and stored.");
 		filenameOption.setRequired(true);
 		outputOption.setRequired(true);
@@ -67,7 +67,7 @@ public class Driver {
 					+ (System.getProperty("workingDir", null) != null ? "/"
 							: "") + cmd.getOptionValue('o');
 			String recordValue = cmd.getOptionValue('r', "0");
-			boolean noLoginCache = cmd.hasOption('l');
+			boolean noLoginCache = cmd.hasOption('c');
 			Emitter emitter = new Emitter();
 			Emitter.setRecord(new Integer(recordValue).intValue());
 			Emitter.setNoLoginCache(noLoginCache);
