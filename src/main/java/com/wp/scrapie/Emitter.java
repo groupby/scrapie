@@ -90,6 +90,8 @@ public class Emitter implements EmitterWrapper {
 
 	private static Map<String, String> cookies = new HashMap<String, String>();
 
+	private static boolean noLoginCache = false;
+
 	private Map<String, String> postData = new HashMap<>();
 
 	private String url = null;
@@ -783,7 +785,11 @@ public class Emitter implements EmitterWrapper {
 			LOG.trace("----------------------");
 			LOG.trace("Emitter.login() started");
 		}
-		loadOrCache(pUrl, Method.POST, pKeyValues);
+		if (noLoginCache) {
+			loadRaw(pUrl, Method.POST, pKeyValues);
+		} else {
+			loadOrCache(pUrl, Method.POST, pKeyValues);
+		}
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Emitter.login() complete");
 			LOG.trace("----------------------");
@@ -822,16 +828,27 @@ public class Emitter implements EmitterWrapper {
 				LOG.debug("Loaded from cache");
 			}
 		} else {
-			ensureCacheDirExists(cacheDir);
-			Connection connection = createConnection(pUrl);
-			connection.data(pKeyValues);
-			Connection.Response res = connection.method(method).execute();
-			cookies.putAll(res.cookies());
-			printCookies("Receiving", res.cookies());
-			newDocument = res.parse();
-			if (isRecord()) {
-				FileUtils.write(hashFile, res.body(), "UTF8");
-			}
+			newDocument = loadRaw(pUrl, method, pKeyValues);
+		}
+		return newDocument;
+	}
+
+	private Document loadRaw(String pUrl, Method method, String... pKeyValues)
+			throws IOException {
+		Document newDocument;
+		String cacheDir2 = createCacheDir();
+		File hashFile2 = new File(cacheDir2
+				+ DigestUtils.md5Hex(extractSaliantParts(pUrl))
+				+ describe(pUrl) + ".html");
+		ensureCacheDirExists(cacheDir2);
+		Connection connection = createConnection(pUrl);
+		connection.data(pKeyValues);
+		Connection.Response res = connection.method(method).execute();
+		cookies.putAll(res.cookies());
+		printCookies("Receiving", res.cookies());
+		newDocument = res.parse();
+		if (isRecord()) {
+			FileUtils.write(hashFile2, res.body(), "UTF8");
 		}
 		return newDocument;
 	}
@@ -1139,6 +1156,24 @@ public class Emitter implements EmitterWrapper {
 	@DontGenerate
 	public static void setSourceDirectory(File pSourceDirectory) {
 		sourceDirectory = pSourceDirectory;
+	}
+
+	/**
+	 * @internal
+	 * @return
+	 */
+	@DontGenerate
+	public static boolean isNoLoginCache() {
+		return noLoginCache;
+	}
+
+	/**
+	 * @internal
+	 * @param pNoLoginCache
+	 */
+	@DontGenerate
+	public static void setNoLoginCache(boolean pNoLoginCache) {
+		noLoginCache = pNoLoginCache;
 	}
 
 }

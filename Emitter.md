@@ -16,10 +16,10 @@ Java method at runtime.
 
 ###Methods
 - [addExcludeValue(String pValue)](#1526343849) 
-- [breakIntoSections(String pQuery, Function pDealWith)](#907510991)
+- [breakIntoSections(String pQuery, Function pDealWith)](#907510991) 
 - [emit(String pKey, List pValue)](#856545347) 
 - [emit(String pKey, Object... pValue)](#-418495782) 
-- [emitForWorkingId(String pKey, List pValue)](#294587270)
+- [emitForWorkingId(String pKey, List pValue)](#294587270) 
 - [emitForWorkingId(String pKey, Object... pValue)](#1789501815) 
 - [flush()](#-760377595) 
 - [getCookies()](#216551706)  returns Map

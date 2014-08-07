@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 /**
  * @internal
  * @author will
- *
+ * 
  */
 public class Driver {
 
@@ -36,6 +36,8 @@ public class Driver {
 				"Record this run and stop after N records have been emmited");
 		Option typeOption = new Option("t", "type", true,
 				"The record type, json or xml (default)");
+		Option noCacheLoginOption = new Option("l", "noCacheLogin", true,
+				"Always go online for login attempts so that cookies are retrieved and stored.");
 		filenameOption.setRequired(true);
 		outputOption.setRequired(true);
 		options.addOption(filenameOption);
@@ -43,6 +45,7 @@ public class Driver {
 		options.addOption(logLevelOption);
 		options.addOption(recordOption);
 		options.addOption(typeOption);
+		options.addOption(noCacheLoginOption);
 	}
 
 	public static void main(String[] args) {
@@ -64,8 +67,10 @@ public class Driver {
 					+ (System.getProperty("workingDir", null) != null ? "/"
 							: "") + cmd.getOptionValue('o');
 			String recordValue = cmd.getOptionValue('r', "0");
+			boolean noLoginCache = cmd.hasOption('l');
 			Emitter emitter = new Emitter();
 			Emitter.setRecord(new Integer(recordValue).intValue());
+			Emitter.setNoLoginCache(noLoginCache);
 			Writer out = null;
 			String type = cmd.getOptionValue('t', "xml");
 			if (type.equals("xml")) {
