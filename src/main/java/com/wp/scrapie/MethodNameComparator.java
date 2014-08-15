@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.thoughtworks.qdox.model.JavaMethod;
 /**
  * @internal
- * @author will
+ * @author will.warren@groupbyinc.com
  *
  */
 final class MethodNameComparator implements Comparator<JavaMethod> {

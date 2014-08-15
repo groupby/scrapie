@@ -1,5 +1,6 @@
 ![Scrapie](src/main/images/sheepVerySmall.png) Scrapie
 ======= 
+
 A Web Scraper.  
 _Not the fatal, degenerative disease that affects the nervous systems of sheep and goats._
 

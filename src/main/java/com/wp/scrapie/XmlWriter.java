@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 /**
  * @internal
- * @author will
+ * @author will.warren@groupbyinc.com
  *
  */
 public class XmlWriter extends Writer {

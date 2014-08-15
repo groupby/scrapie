@@ -3,7 +3,7 @@ package com.wp.scrapie;
 /**
  * Holder class used to generate docs
  * 
- * @author will
+ * @author will.warren@groupbyinc.com
  * @internal
  */
 public class Function {

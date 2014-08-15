@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * @internal
- * @author user
- *
+ * @author will.warren@groupbyinc.com
+ * 
  */
 public class UrlPatternIteratorAlpha implements Iterator<String>,
 		UrlPatternIteratorGeneric {
@@ -96,7 +97,6 @@ public class UrlPatternIteratorAlpha implements Iterator<String>,
 	@Override
 	public void remove() {
 		throw new IllegalStateException("not implemented");
-
 	}
 
 }

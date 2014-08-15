@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 /**
  * @internal
- * @author user
+ * @author will.warren@groupbyinc.com
  *
  */
 public interface UrlPatternIteratorGeneric extends Iterator<String> {

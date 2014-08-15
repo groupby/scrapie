@@ -34,7 +34,7 @@ import com.wp.scrapie.js.JsSignature;
 
 /**
  * @internal
- * @author will
+ * @author will.warren@groupbyinc.com
  * 
  */
 public class GenerateReferenceDocs {

@@ -65,7 +65,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * 
  * </code>
  * 
- * @author will
+ * @author will.warren@groupbyinc.com
  * 
  */
 public class Emitter implements EmitterWrapper {

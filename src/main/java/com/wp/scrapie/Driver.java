@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @internal
- * @author will
+ * @author will.warren@groupbyinc.com
  * 
  */
 public class Driver {

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 /**
  * @internal
- * @author will
+ * @author will.warren@groupbyinc.com
  *
  */
 public @interface DontGenerate {

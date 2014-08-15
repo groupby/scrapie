@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * @internal
- * @author user
+ * @author will.warren@groupbyinc.com
  * 
  */
 public class UrlPatternIteratorNumeric implements Iterator<String>,
@@ -57,7 +57,6 @@ public class UrlPatternIteratorNumeric implements Iterator<String>,
 	@Override
 	public void remove() {
 		throw new IllegalStateException("not implemented");
-
 	}
 
 }
