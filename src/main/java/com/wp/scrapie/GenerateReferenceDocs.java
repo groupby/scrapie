@@ -3,15 +3,18 @@ package com.wp.scrapie;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,11 +28,14 @@ import com.thoughtworks.qdox.model.JavaMember;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
+import com.wp.scrapie.js.JsAnnotation;
+import com.wp.scrapie.js.JsParser;
+import com.wp.scrapie.js.JsSignature;
 
 /**
  * @internal
  * @author will
- *
+ * 
  */
 public class GenerateReferenceDocs {
 
@@ -50,6 +56,82 @@ public class GenerateReferenceDocs {
 	}
 
 	public static void generate() throws IOException {
+		generateJava();
+		generateJavaScript();
+	}
+
+	public static void generateJavaScript() throws IOException {
+		File sourceDir = new File("src/main/resources/");
+		if (!sourceDir.exists()) {
+			throw new IllegalStateException("Could not find: "
+					+ sourceDir.getAbsolutePath());
+		}
+		new File(DIST_DOCS).mkdirs();
+		File[] sourceFiles = getJsFiles(sourceDir);
+		continueFile: for (int m = 0; m < sourceFiles.length; m++) {
+			Writer out = null;
+			try {
+				String filename = createFilename(DIST_DOCS,
+						sourceFiles[m].getName(), "");
+				if (LOG.isInfoEnabled()) {
+					LOG.info("Creating: " + filename);
+				}
+				String fileContents = FileUtils
+						.readFileToString(sourceFiles[m]);
+
+				List<JsSignature> methods = JsParser.getMethods(fileContents);
+				List<JsSignature> constructors = JsParser
+						.getSignatures(fileContents);
+				if (!constructors.isEmpty()) {
+					for (JsSignature con : constructors) {
+						if (!con.getAnnotations().isEmpty()) {
+							List<JsAnnotation> anns = con.getAnnotations();
+							for (JsAnnotation ann : anns) {
+								if (ann.getType().equals("internal")) {
+									if (LOG.isDebugEnabled()) {
+										LOG.debug("skipping");
+									}
+									continue continueFile;
+								}
+							}
+						}
+					}
+				}
+				out = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream(new File(filename)), "UTF-8"));
+				out.write("![Emitter](src/main/images/sheepVeryVerySmall.png) ");
+				out.write(sourceFiles[m].getName() + "\n");
+				out.write("=====" + "\n\n");
+				if (!methods.isEmpty()) {
+					// Collections.sort(methods, new MethodNameComparator());
+					writeJsToc(out, constructors, methods);
+					writeJsConstructors(out, constructors);
+					for (JsSignature javaMethod : methods) {
+						if (isJsValid(javaMethod)) {
+							writeJsMethodSignature(out, javaMethod);
+							writeJsComment(out, javaMethod.getComments());
+						}
+					}
+				}
+			} finally {
+				IOUtils.closeQuietly(out);
+			}
+
+		}
+	}
+
+	private static File[] getJsFiles(File pSourceDir) {
+		return pSourceDir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File pPathname) {
+				return pPathname.getName().endsWith(".js");
+			}
+		});
+	}
+
+	private static void generateJava() throws IOException,
+			UnsupportedEncodingException, FileNotFoundException {
 		File sourceDir = new File("src/main/java/com/wp/scrapie");
 		if (!sourceDir.exists()) {
 			throw new IllegalStateException("Could not find: "
@@ -117,6 +199,11 @@ public class GenerateReferenceDocs {
 		out.write("\n");
 	}
 
+	private static void writeJsComment(Writer out, String comment)
+			throws IOException {
+		out.write(comment + "\n\n");
+	}
+
 	private static final Pattern IN_PARENS = Pattern
 			.compile("public\\s+([^\\(]+)\\(([^\\)]*)");
 
@@ -144,6 +231,36 @@ public class GenerateReferenceDocs {
 					writeParameterComments(pOut,
 							constructor.getTagsByName("param"));
 					writeComment(pOut, constructor.getComment());
+				}
+
+			}
+		}
+
+	}
+
+	private static void writeJsConstructors(Writer pOut,
+			List<JsSignature> pConstructors) throws IOException {
+		if (!hasConstructor(pConstructors)) {
+			return;
+		}
+
+		for (JsSignature constructor : pConstructors) {
+			if (isJsValid(constructor)) {
+				StringBuilder constructorSig = createJsConstructorSignature(constructor);
+				if (StringUtils.isNotBlank(constructorSig.toString())) {
+					String[] nameAndParams = constructorSig.toString().split(
+							"\\(", 2);
+					if (nameAndParams.length != 2) {
+						return;
+					}
+					pOut.write("<a name=\""
+							+ constructorSig.toString().hashCode() + "\">");
+					pOut.write(nameAndParams[0]);
+					pOut.write("</a>(");
+					pOut.write(nameAndParams[1]);
+					pOut.write("\n-----\n\n");
+					writeJsParameterComments(pOut, constructor.getAnnotations());
+					writeJsComment(pOut, constructor.getComments());
 				}
 
 			}
@@ -179,11 +296,36 @@ public class GenerateReferenceDocs {
 		return constructorString;
 	}
 
+	private static StringBuilder createJsConstructorSignature(
+			JsSignature constructor) {
+		StringBuilder constructorString = new StringBuilder();
+
+		constructorString.append(constructor.getName());
+		constructorString.append("(");
+		for (String param : constructor.getParams()) {
+			constructorString.append(param).append(", ");
+		}
+		if (!constructor.getParams().isEmpty()) {
+			constructorString.delete(constructorString.length() - 2,
+					constructorString.length());
+		}
+		constructorString.append(")");
+		return constructorString;
+	}
+
 	private static boolean isValid(JavaAnnotatedElement pElement) {
 		if (isTagged(pElement, "deprecated") || isTagged(pElement, "internal")) {
 			return false;
 		}
 		return ((JavaMember) pElement).isPublic();
+	}
+
+	private static boolean isJsValid(JsSignature pElement) {
+		if (isJsTagged(pElement, "deprecated")
+				|| isJsTagged(pElement, "internal")) {
+			return false;
+		}
+		return true;
 	}
 
 	private static boolean isTagged(JavaAnnotatedElement pConstructor,
@@ -195,7 +337,17 @@ public class GenerateReferenceDocs {
 		return false;
 	}
 
-	private static boolean hasConstructor(List<JavaConstructor> pConstructors) {
+	private static boolean isJsTagged(JsSignature pConstructor, String tagName) {
+		List<JsAnnotation> tags = pConstructor.getAnnotations();
+		for (JsAnnotation jsAnnotation : tags) {
+			if (jsAnnotation.getType().equals(tagName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean hasConstructor(List<? extends Object> pConstructors) {
 		return pConstructors != null && !pConstructors.isEmpty();
 	}
 
@@ -237,6 +389,36 @@ public class GenerateReferenceDocs {
 
 	}
 
+	private static void writeJsToc(Writer pOut,
+			List<JsSignature> pConstructors, List<JsSignature> pMethods)
+			throws IOException {
+		if (hasJsValid(pConstructors)) {
+			pOut.write("\n###Constructors\n");
+		}
+
+		for (JsSignature javaConstructor : pConstructors) {
+			if (isJsValid(javaConstructor)) {
+				String constructorSignature = createJsConstructorSignature(
+						javaConstructor).toString();
+				pOut.write("- [" + constructorSignature + "](#"
+						+ constructorSignature.hashCode() + ")\n");
+			}
+		}
+
+		if (hasJsValid(pMethods)) {
+			pOut.write("\n###Methods\n");
+		}
+		for (JsSignature javaMethod : pMethods) {
+			if (isJsValid(javaMethod)) {
+				pOut.write("- [" + javaMethod.getName()
+						+ jsParameterListToString(javaMethod.getParams())
+						+ "](#" + generateJsId(javaMethod) + ") " + "\n");
+			}
+		}
+		pOut.write("\n\n");
+
+	}
+
 	private static boolean hasValid(
 			List<? extends JavaAnnotatedElement> pConstructors) {
 		for (JavaAnnotatedElement javaConstructor : pConstructors) {
@@ -247,9 +429,23 @@ public class GenerateReferenceDocs {
 		return false;
 	}
 
+	private static boolean hasJsValid(List<JsSignature> pConstructors) {
+		for (JsSignature jsConstructor : pConstructors) {
+			if (isJsValid(jsConstructor)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static int generateId(JavaMethod javaMethod) {
 		return (javaMethod.getName() + parameterListToString(javaMethod))
 				.hashCode();
+	}
+
+	private static int generateJsId(JsSignature javaMethod) {
+		return (javaMethod.getName() + jsParameterListToString(javaMethod
+				.getParams())).hashCode();
 	}
 
 	private static void writeMethodSignature(Writer pOut, JavaClass pJavaClass,
@@ -268,6 +464,19 @@ public class GenerateReferenceDocs {
 		pOut.write("\n");
 		writeParameterComments(pOut, pJavaMethod.getTagsByName("param"));
 		writeReturns(pOut, pJavaMethod);
+	}
+
+	private static void writeJsMethodSignature(Writer pOut,
+			JsSignature pJavaMethod) throws IOException {
+		pOut.write("#### ");
+
+		pOut.write("<a style=\"font-size:16px;\" name=\""
+				+ generateJsId(pJavaMethod) + "\">" + pJavaMethod.getName()
+				+ "</a>");
+		pOut.write("<span style=\"font-size:16px;\">"
+				+ jsParameterListToString(pJavaMethod.getParams()) + "</span>");
+		pOut.write("\n");
+		writeJsParameterComments(pOut, pJavaMethod.getAnnotations());
 	}
 
 	private static String formatReturn(JavaMethod pJavaMethod) {
@@ -304,11 +513,34 @@ public class GenerateReferenceDocs {
 			pOut.write("- <b>" + value[0] + "</b>: "
 					+ (value.length == 2 ? value[1] : "") + "\n");
 		}
+		pOut.write("\n");
+	}
 
+	private static void writeJsParameterComments(Writer pOut,
+			List<JsAnnotation> pParamTags) throws IOException {
+		if (pParamTags == null || pParamTags.isEmpty()) {
+			return;
+		}
+
+		for (JsAnnotation docletTag : pParamTags) {
+			if (docletTag.getType().equals("param")) {
+				pOut.write("- <b>"
+						+ docletTag.getName()
+						+ "</b>: "
+						+ (StringUtils.isNotBlank(docletTag.getComments()) ? docletTag
+								.getComments() : "") + "\n");
+			}
+		}
+
+		pOut.write("\n");
 	}
 
 	private static String parameterListToString(JavaMethod pJavaMethod) {
 		return squareToCurly(pJavaMethod.getParameters());
+	}
+
+	private static String jsParameterListToString(List<String> pParams) {
+		return "(" + pParams.toString().replaceAll("[\\[\\]]", "") + ")";
 	}
 
 	private static String squareToCurly(List<JavaParameter> pList) {
@@ -331,7 +563,12 @@ public class GenerateReferenceDocs {
 
 	private static String createFilename(String pOutputDir,
 			JavaClass javaClass, String prefix) {
-		return pOutputDir + "/" + prefix + javaClass.getName() + ".md";
+		return pOutputDir + prefix + javaClass.getName() + ".md";
+	}
+
+	private static String createFilename(String pOutputDir, String pFilename,
+			String prefix) {
+		return pOutputDir + prefix + pFilename + ".md";
 	}
 
 	private static File[] getJavaFiles(File sourceDir) {

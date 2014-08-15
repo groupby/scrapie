@@ -22,10 +22,12 @@ that you need, plus some JavaScript wrappings that make closure possible.
 
 Other JavaScript classes and functions are available.  
 
-- [EmitterWrapper.js](src/main/resources/EmitterWrapper.js), which wraps the Emitter object to give it some more useful JavaScripty syntax.
-- [FileIterator.js](src/main/resources/FileIterator.js), JavaScript backing to a FileLineIterator   
-- [GlobalFunctions.js](src/main/resources/GlobalFunctions.js), some useful methods like print()
-- [UrlIterator.js](src/main/resources/UrlIterator.js), which you can implement to generate URLs.
+- [EmitterWrapper.js](Emitter.md), which wraps the Emitter object to give it some more useful JavaScripty syntax.
+- [FileIterator.js](FileIterator.js.md), JavaScript backing to a FileLineIterator   
+- [GlobalFunctions.js](GlobalFunctions.js.md), some useful methods like print()
+- [UrlIterator.js](UrlIterator.js.md), which you can implement to generate URLs.
+- [UrlPatternIterator.js](UrlPatternIterator.js.md), takes a contstructor pattern that will be used  to generate
+a sequence of URLs.  You can generate either numeric or 
 
 Everything that is scraped and emitted is emitted as a list.  If you emit the same key multiple times
 they will be added to the existing list element.  Blank entries and duplicates are removed.

@@ -1,5 +1,23 @@
 /**
+ * <code>
  * Generate URLs. Emit null to stop the iteration.
+ * 
+ * The passed in function will be used to get each URL.  Once this function emits null
+ * the for each loop will exit.
+ * 
+ *     var urlIterator = new UrlIterator(function(pIndex){
+ *         if (pIndex < 2) {
+ *             return "http://localhost:####/index.html?id=" + pIndex;
+ *         } else {
+ *             return null;
+ *         }
+ *     });
+ *     urlIterator.forEach(function(pContext){
+ *         pContext.emit("title", pContext.getJqText("title").get(0));
+ *         pContext.flush();
+ *     });
+ * </code>
+ * @param pGenerate The function that will generate each URL in turn.
  */
 var UrlIterator = function(pGenerate) {
 
@@ -7,6 +25,16 @@ var UrlIterator = function(pGenerate) {
 	this.url = null;
 	this.generate = pGenerate;
 
+	/**
+	 * <code>
+	 * Loop through each of the generated URLs loading each page in turn and passing the context load for 
+	 * that page into the pDealWith function.
+	 * </code>
+	 * 
+	 * @param pDealWith
+	 *            the call back function that will be passed in the context of
+	 *            the page loaded from the generated URL.
+	 */
 	this.forEach = function(pDealWith) {
 		var url = null;
 		while ((url = pGenerate(this.index)) != null && emitter.keepGoing()) {

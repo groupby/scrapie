@@ -66,7 +66,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * </code>
  * 
  * @author will
- *
+ * 
  */
 public class Emitter implements EmitterWrapper {
 
@@ -90,7 +90,11 @@ public class Emitter implements EmitterWrapper {
 
 	private static Map<String, String> cookies = new HashMap<String, String>();
 
+	private static boolean noLoginCache = false;
+
 	private Map<String, String> postData = new HashMap<>();
+
+	private String url = null;
 
 	private static File sourceDirectory;
 
@@ -262,7 +266,7 @@ public class Emitter implements EmitterWrapper {
 					url = baseUri.substring(0, baseUri.indexOf("/", 10)) + url;
 				}
 				Emitter emitter = new Emitter();
-				emitter.setDocument(loadUrl(url));
+				emitter.load(url);
 				emitter.setParent(this);
 				pages.add(emitter);
 			} else {
@@ -296,6 +300,9 @@ public class Emitter implements EmitterWrapper {
 				.getClassLoader().getResourceAsStream("UrlIterator.js")),
 				"UrlIterator.js", 1, null);
 		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
+				.getClassLoader().getResourceAsStream("UrlPatternIterator.js")),
+				"UrlPatternIterator.js", 1, null);
+		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
 				.getClassLoader().getResourceAsStream("FileIterator.js")),
 				"FileIterator.js", 1, null);
 		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
@@ -310,8 +317,8 @@ public class Emitter implements EmitterWrapper {
 		String rawEmitter = IOUtils.toString(new InputStreamReader(this
 				.getClass().getClassLoader()
 				.getResourceAsStream("EmitterWrapper.js"), "UTF8"));
-		int start = rawEmitter.indexOf("//GENERATED") + "//GENERATED".length();
-		int end = rawEmitter.indexOf("//GENERATED", start);
+		int start = rawEmitter.indexOf("// GENERATED") + "//GENERATED".length();
+		int end = rawEmitter.indexOf("// GENERATED", start);
 		String startCode = rawEmitter.substring(0, start);
 		String endCode = rawEmitter.substring(end);
 		return new StringReader(startCode + getInjectedCode() + endCode);
@@ -387,6 +394,33 @@ public class Emitter implements EmitterWrapper {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * <code>
+	 * Search up the parent chain for the first URL that this block is contained by.
+	 * </code>
+	 * 
+	 * @return The URL that the current block is contained by.
+	 */
+	public String getUrl() {
+		if (url == null) {
+			return parent.getUrl();
+		} else {
+			return url;
+		}
+	}
+
+	/**
+	 * <code>
+	 * Set the URL for the current emitter.  Generally set when a document is loaded.
+	 * </code>
+	 * 
+	 * @param pUrl
+	 *            The URL to set.
+	 */
+	public void setUrl(String pUrl) {
+		url = pUrl;
 	}
 
 	/**
@@ -731,6 +765,7 @@ public class Emitter implements EmitterWrapper {
 	 */
 	public void load(String pUrl) throws IOException {
 		document = loadUrl(pUrl);
+		url = pUrl;
 	}
 
 	/**
@@ -753,7 +788,11 @@ public class Emitter implements EmitterWrapper {
 			LOG.trace("----------------------");
 			LOG.trace("Emitter.login() started");
 		}
-		loadOrCache(pUrl, Method.POST, pKeyValues);
+		if (noLoginCache) {
+			loadRaw(pUrl, Method.POST, pKeyValues);
+		} else {
+			loadOrCache(pUrl, Method.POST, pKeyValues);
+		}
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Emitter.login() complete");
 			LOG.trace("----------------------");
@@ -764,7 +803,7 @@ public class Emitter implements EmitterWrapper {
 		Method method = Method.GET;
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("----------------------");
-			LOG.trace("nJs.loadUrl() started");
+			LOG.trace("Emitter.loadUrl() started");
 		}
 		if (LOG.isInfoEnabled()) {
 			LOG.info("Loading Url: " + pUrl);
@@ -792,16 +831,28 @@ public class Emitter implements EmitterWrapper {
 				LOG.debug("Loaded from cache");
 			}
 		} else {
-			ensureCacheDirExists(cacheDir);
-			Connection connection = createConnection(pUrl);
-			connection.data(pKeyValues);
-			Connection.Response res = connection.method(method).execute();
-			cookies.putAll(res.cookies());
-			printCookies("Receiving", res.cookies());
-			newDocument = res.parse();
-			if (isRecord()) {
-				FileUtils.write(hashFile, res.body(), "UTF8");
-			}
+			newDocument = loadRaw(pUrl, method, pKeyValues);
+		}
+		return newDocument;
+	}
+
+	private Document loadRaw(String pUrl, Method method, String... pKeyValues)
+			throws IOException {
+		Document newDocument;
+		String cacheDir2 = createCacheDir();
+		File hashFile2 = new File(cacheDir2
+				+ DigestUtils.md5Hex(extractSaliantParts(pUrl))
+				+ describe(pUrl) + ".html");
+		ensureCacheDirExists(cacheDir2);
+		Connection connection = createConnection(pUrl);
+		connection.data(pKeyValues);
+		Connection.Response res = connection.method(method).execute();
+		cookies.putAll(res.cookies());
+		printCookies("Receiving", res.cookies());
+		System.out.println(res.body());
+		newDocument = res.parse();
+		if (isRecord()) {
+			FileUtils.write(hashFile2, res.body(), "UTF8");
 		}
 		return newDocument;
 	}
@@ -1105,6 +1156,33 @@ public class Emitter implements EmitterWrapper {
 	@DontGenerate
 	public static void setSourceDirectory(File pSourceDirectory) {
 		sourceDirectory = pSourceDirectory;
+	}
+
+	/**
+	 * @internal
+	 * @return
+	 */
+	@DontGenerate
+	public static boolean isNoLoginCache() {
+		return noLoginCache;
+	}
+
+	/**
+	 * @internal
+	 * @param pNoLoginCache
+	 */
+	@DontGenerate
+	public static void setNoLoginCache(boolean pNoLoginCache) {
+		noLoginCache = pNoLoginCache;
+	}
+
+	/**
+	 * @internal
+	 * @param pPattern
+	 * @return
+	 */
+	public UrlPatternIterator getUrlPatternIterator(String pPattern) {
+		return new UrlPatternIterator(pPattern);
 	}
 
 }

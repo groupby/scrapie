@@ -52,6 +52,7 @@ Java method at runtime.
 - <b>pValue</b>: 
            The value that should never be emitted.
 
+
 Global setting to tell the emitter that if it finds this 
 value associated with any key, to drop that key value pair.
 
@@ -62,6 +63,7 @@ value associated with any key, to drop that key value pair.
            The CSS query to find the sections to break up into.
 - <b>pDealWith</b>: 
            The callback function used to deal with each section.
+
 
 Breaks a DOM up by a specific CSS selector and creates a new context object
 for each section.  This new context object is passed to the callback function.
@@ -84,11 +86,13 @@ var sections = pContext.breakIntoSections(".item", function(pContext){
 - <b>pValue</b>: 
            The value of the property.
 
+
 #### <a style="font-size:16px;" name="-418495782">emit</a><span style="font-size:16px;">(String pKey, Object... pValue)</span>
 - <b>pKey</b>: 
            The name of the property to emit
 - <b>pValue</b>: 
            The value of the property.
+
 
 Emit's a key value pair into a map.  By default this goes into a global map
 that is flushed to disk when `flush()` is called.
@@ -106,6 +110,7 @@ Same as `emitForWorkingId()` but takes a list of values
            The name of the property to emit
 - <b>pValue</b>: 
            The value of the property.
+
 
 Similar to emit, however this method emits into a map with a specific name.
 Then name is set by calling `setWorkingId(String id)`.  This is held globally and 
@@ -147,6 +152,7 @@ This will also represent the document
 #### <span style="font-size:12px;color:#AAAAAA">org.jsoup.select.Elements</span> <a style="font-size:16px;" name="1932918093">getJq</a><span style="font-size:16px;">(String pQuery)</span>
 - <b>pQuery</b>: 
            The CSS selector.
+
 - <b>returns</b>: a list of elements that match this CSS path.
 
 Return an Elements object of all the matching elements against the provided 
@@ -162,6 +168,7 @@ Elements has a bunch of helper methods that return just the first element's stri
            The CSS selector to the elements desired.
 - <b>pAttr</b>: 
            The attribute to retrieve from each element.
+
 - <b>returns</b>: A list of strings of the elements that had this attribute and the
         attribute value.
 
@@ -173,6 +180,7 @@ return a specific attribute from each element as a list.
 #### <span style="font-size:12px;color:#AAAAAA">List&lt;String&gt;</span> <a style="font-size:16px;" name="-1192716576">getJqText</a><span style="font-size:16px;">(String pQuery)</span>
 - <b>pQuery</b>: 
            The CSS path to select the desired elements.
+
 - <b>returns</b>: A list of strings of the text of the matched elements
 
 Rather than get the list of elements, return a list of the 
@@ -198,6 +206,7 @@ Post data that should be set on a request.
 #### <span style="font-size:12px;color:#AAAAAA">List&lt;String&gt;</span> <a style="font-size:16px;" name="-1271561236">getReText</a><span style="font-size:16px;">(String pPattern)</span>
 - <b>pPattern</b>: 
            The Regex Pattern to match.
+
 
 By default this will return the entire matched string.
 If you specify a group in the regular expression, by using
@@ -233,6 +242,7 @@ The name of the map that all calls to `emitForWorkingId()` will be inserted into
 #### <span style="font-size:12px;color:#AAAAAA">List&lt;org.jsoup.nodes.Node&gt;</span> <a style="font-size:16px;" name="1521535043">getXPath</a><span style="font-size:16px;">(String pQuery)</span>
 - <b>pQuery</b>: 
            The XPath query.
+
 - <b>returns</b>: A list of nodes that match this XPath expression.
 
 Returns a list of nodes, rather than an Elements section as XPath can return
@@ -245,6 +255,7 @@ the text nodes as well as elements.
            The XPath query to the elements desired.
 - <b>pAttr</b>: 
            The attribute to retrieve from each element.
+
 - <b>returns</b>: A list of strings of the elements that had this attribute and the
         attribute value.
 
@@ -256,6 +267,7 @@ return a specific attribute from each element as a list.
 #### <span style="font-size:12px;color:#AAAAAA">List&lt;String&gt;</span> <a style="font-size:16px;" name="2138633942">getXPathText</a><span style="font-size:16px;">(String pQuery)</span>
 - <b>pQuery</b>: 
            The XPath expression to evaluate.
+
 - <b>returns</b>: A list of strings that represent these nodes.
 
 Return a list of strings that match the XPath query.
@@ -266,6 +278,7 @@ Return a list of strings that match the XPath query.
 #### <a style="font-size:16px;" name="410534269">load</a><span style="font-size:16px;">(String pUrl)</span>
 - <b>pUrl</b>: 
            The URL to retrieve.
+
 
 Load a url and store it in the document variable.
 Accessible through `getDocument()`.
@@ -280,6 +293,7 @@ Also see the get* methods that pull data from this document.
            A splat of key value pairs that will be submitted as part of
            the login
 
+
 Login to a website. Find the login URL from the action element of the form that 
 is used on the login page of that website. 
 Typically it's best to use the Chrome nework inspector to copy all of the form values
@@ -291,6 +305,7 @@ as they have crazy viewstate parameters that need to be sent.
 #### <a style="font-size:16px;" name="1272621438">print</a><span style="font-size:16px;">(String pMessage)</span>
 - <b>pMessage</b>: 
            The string to print
+
 
 Helper method to print a string to standard out.  Prints at info level.
 
@@ -311,6 +326,7 @@ Prints at info level.
            The callback function used to deal with each new page.
 
 
+
 Method finds all the anchor tags that match the query.  For each
 anchor tag the URL is loaded and a new Emitter object is created 
 and passed back into into the dealWith function.
@@ -327,6 +343,7 @@ pContext.processUrlsJq("a", function(pContext){
 - <b>pRecord</b>: 
            The number of records to emit before stopping.
 
+
 Set the number of records to emit. This also tells the URL loader to
 write each request to disk and cache them so when you run this scraper again,
 it will hit disk and not the internet.  Good when you need to quickly iterate
@@ -338,6 +355,7 @@ through trials of your CSS/XPath/RegEx selectors.
 - <b>pUrl</b>: 
            The URL to set.
 
+
 Set the URL for the current emitter.  Generally set when a document is loaded.
 
 
@@ -345,6 +363,7 @@ Set the URL for the current emitter.  Generally set when a document is loaded.
 #### <a style="font-size:16px;" name="-1064871666">setWorkingId</a><span style="font-size:16px;">(String workingId)</span>
 - <b>workingId</b>: 
            The context working id.
+
 
 Once the working id is set, all calls to `emitForWorkingId()` will
 be put into a map with this ID as a key.

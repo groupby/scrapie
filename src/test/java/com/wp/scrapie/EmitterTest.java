@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 
 import org.apache.commons.io.FileUtils;
@@ -168,10 +167,6 @@ public class EmitterTest extends JsLoader {
 
 	}
 
-	private int getPort() throws IOException {
-		return server.getConnectedPort();
-	}
-
 	@Test
 	public void testMedium() throws Exception {
 		createListPages();
@@ -197,11 +192,6 @@ public class EmitterTest extends JsLoader {
 						"1",
 						"<div class='item'><a href='/detail.jsp?id=cde'>link 3</a></div>"
 								+ "<div class='item'><a href='/detail.jsp?id=def'>link 4</a></div>"));
-	}
-
-	private String createWebPage(final String pTitle, String pBody) {
-		return "<html><head>" + "<title>title " + pTitle + "</title>"
-				+ "</head><body>" + pBody + "</body></html>";
 	}
 
 }

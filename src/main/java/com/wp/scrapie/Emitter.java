@@ -300,6 +300,9 @@ public class Emitter implements EmitterWrapper {
 				.getClassLoader().getResourceAsStream("UrlIterator.js")),
 				"UrlIterator.js", 1, null);
 		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
+				.getClassLoader().getResourceAsStream("UrlPatternIterator.js")),
+				"UrlPatternIterator.js", 1, null);
+		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
 				.getClassLoader().getResourceAsStream("FileIterator.js")),
 				"FileIterator.js", 1, null);
 		cx.evaluateReader(scope, new InputStreamReader(this.getClass()
@@ -314,8 +317,8 @@ public class Emitter implements EmitterWrapper {
 		String rawEmitter = IOUtils.toString(new InputStreamReader(this
 				.getClass().getClassLoader()
 				.getResourceAsStream("EmitterWrapper.js"), "UTF8"));
-		int start = rawEmitter.indexOf("//GENERATED") + "//GENERATED".length();
-		int end = rawEmitter.indexOf("//GENERATED", start);
+		int start = rawEmitter.indexOf("// GENERATED") + "//GENERATED".length();
+		int end = rawEmitter.indexOf("// GENERATED", start);
 		String startCode = rawEmitter.substring(0, start);
 		String endCode = rawEmitter.substring(end);
 		return new StringReader(startCode + getInjectedCode() + endCode);
@@ -846,6 +849,7 @@ public class Emitter implements EmitterWrapper {
 		Connection.Response res = connection.method(method).execute();
 		cookies.putAll(res.cookies());
 		printCookies("Receiving", res.cookies());
+		System.out.println(res.body());
 		newDocument = res.parse();
 		if (isRecord()) {
 			FileUtils.write(hashFile2, res.body(), "UTF8");
@@ -895,7 +899,7 @@ public class Emitter implements EmitterWrapper {
 		connection.timeout(40000);
 		connection.referrer("");
 		connection.followRedirects(true);
-		// connection.ignoreHttpErrors(true);
+		connection.ignoreHttpErrors(true);
 		connection.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) "
 				+ "AppleWebKit/537.36 (KHTML, like Gecko) "
 				+ "Chrome/35.0.1916.153 Safari/537.36");
@@ -907,11 +911,7 @@ public class Emitter implements EmitterWrapper {
 		}
 		if (cookies != null && !cookies.isEmpty()) {
 			printCookies("Sending", cookies);
-			Set<Entry<String, String>> entrySet = cookies.entrySet();
-			for (Entry<String, String> entry : entrySet) {
-				connection.cookie(entry.getKey(), entry.getValue());
-
-			}
+			connection.cookies(cookies);
 		}
 		return connection;
 	}
@@ -1174,6 +1174,15 @@ public class Emitter implements EmitterWrapper {
 	@DontGenerate
 	public static void setNoLoginCache(boolean pNoLoginCache) {
 		noLoginCache = pNoLoginCache;
+	}
+
+	/**
+	 * @internal
+	 * @param pPattern
+	 * @return
+	 */
+	public UrlPatternIterator getUrlPatternIterator(String pPattern) {
+		return new UrlPatternIterator(pPattern);
 	}
 
 }
