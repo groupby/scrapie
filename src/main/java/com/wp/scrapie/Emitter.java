@@ -849,7 +849,6 @@ public class Emitter implements EmitterWrapper {
 		Connection.Response res = connection.method(method).execute();
 		cookies.putAll(res.cookies());
 		printCookies("Receiving", res.cookies());
-		System.out.println(res.body());
 		newDocument = res.parse();
 		if (isRecord()) {
 			FileUtils.write(hashFile2, res.body(), "UTF8");
