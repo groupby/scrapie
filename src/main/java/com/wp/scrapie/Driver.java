@@ -1,19 +1,13 @@
 package com.wp.scrapie;
 
+import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 /**
  * @internal
