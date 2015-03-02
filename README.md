@@ -25,13 +25,14 @@ Usage
 
 Requires that Java 1.7 is installed and on your path.
 
-```
+```bash
 usage: scrapie
  -f,--file <arg>        The JavaScript file to use
  -o,--output <arg>      The file to output to
- -r,--record <arg>      Record this run and stop after N records have been emitted
- -c,--cachelessLogin	If in record mode, don't go to the cache for logins.
- -t,--type <arg>        The record type, json or xml (default)
+ -r,--maxRecords <arg>  Record this run and stop after N records have been emitted
+ -l,--loginLive		If in record mode, don't go to the cache for logins.
+ -n,--noCache           Never use the cache
+ -t,--type <arg>        The record type, json (default) or xml
  -v,--verbosity <arg>   Log Level, trace, debug, info (default)
 ```
 
@@ -56,6 +57,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 urlIterator.forEach(function(pContext){
    pContext.emit("title", pContext.getJqText("title"));
    pContext.flush();
+   // return true from this method if you wish the iterator to exit.
 });
 ```
 
