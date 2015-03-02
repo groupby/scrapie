@@ -9,7 +9,7 @@ Quickstart
 ------
 
 1. Make sure Java 1.7 is on your computer and the java command is on your path.
-1. Download the [scrapie-latest.zip](/groupby/scrapie/releases/latest) 
+1. Download the [scrapie-latest.zip](https://github.com/groupby/scrapie/releases/latest)
 1. Unpack it `scrapie-x.x.x` and go into the directory `cd scrapie-x.x.x`
 1. run the test 
  - on *nix `./scrapie -f google.js -o google.json`   
