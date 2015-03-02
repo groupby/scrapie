@@ -12,8 +12,8 @@ Quickstart
 1. Download the [scrapie-latest.zip](scrapie-latest.zip?raw=true) 
 1. Unpack it `scrapie-x.x.x` and go into the directory `cd scrapie-x.x.x`
 1. run the test 
- - on *nix `./scrapie -f google.js -o google.xml`   
- - on windows `scrapie.bat -f google.js -o google.xml` 
+ - on *nix `./scrapie -f google.js -o google.json`   
+ - on windows `scrapie.bat -f google.js -o google.json` 
 
 Docs
 ----
@@ -36,7 +36,7 @@ usage: scrapie
  -v,--verbosity <arg>   Log Level, trace, debug, info (default)
 ```
 
-    ./scrapie -f myScraper.js -o records.xml
+    ./scrapie -f myScraper.js -o records.json
 
 Examples Scraper Files
 ------
