@@ -47,6 +47,7 @@ Examples Scraper Files
 Where each URL contains one record.
 
 ```JavaScript
+// Create an iterator that increments a value.
 var urlIterator = new UrlIterator(function(pIndex){
     if (pIndex < 2) {
 		return "http://www.example.com/index.html?id=" + pIndex;
@@ -54,6 +55,7 @@ var urlIterator = new UrlIterator(function(pIndex){
 		return null;
 	 }
 });
+// iterate through that url iterator.   The context represents the page.
 urlIterator.forEach(function(pContext){
    pContext.emit("title", pContext.getJqText("title"));
    pContext.flush();
@@ -73,15 +75,17 @@ var urlIterator = new UrlIterator(function(pIndex){
 		return null;
 	 }
 });
+// iterate through each page.
 urlIterator.forEach(function(pContext) {
+    // find multiple parts of HTML that have a class of .item and iterate through each of them
     pContext.breakIntoSections(".item", function(pContext){
         process(pContext);
         pContext.flush();
     });
 });
 function process(pContext){
- 	var id = pContext.getJq("a").attr("href").split("=")[1];
- 	pContext.emit("id", id);
+    var id = pContext.getJq("a").attr("href").split("=")[1];
+    pContext.emit("id", id);
     pContext.emit("title", pContext.getJqText("a"));
 }
 
@@ -99,13 +103,17 @@ var urlIterator = new UrlIterator(function(pIndex){
 		return null;
 	 }
 });
+// Iterate through each page.
 urlIterator.forEach(function(pContext) {
-	print(pContext.getHtml());
+    // iterate through each element with an .item class.
     pContext.breakIntoSections(".item", function(pContext){
      	var workingId = pContext.getJq("a").attr("href").split("=")[1];
+     	// Set a context that we can refer to later so that we create one
+     	// object, rather than one for each of the sub contexts that we create later.
     	pContext.setWorkingId(workingId);
         processListItem(pContext);
      	pContext.emitForWorkingId("id", workingId);
+     	// find all the links in this item and iterate over them
         pContext.processUrlsJq("a", function(pContext){
             processDetailPage(pContext);
             pContext.flush();
@@ -113,6 +121,7 @@ urlIterator.forEach(function(pContext) {
     });    
 });
 function processListItem(pContext){
+    // for the context that was set earlier, emit a title.
     pContext.emitForWorkingId("title", pContext.getJqText("a"));
 }
 function processDetailPage(pContext){
@@ -135,6 +144,6 @@ A scraper that will generate URLs to crawl and convert them into objects we want
 
 Choices
 ------
-Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.  
-Jsoup was extended to include XPath support.  
-A regular expression matcher is also available.
+- Under the hood the JavaScript scraper files connect to a Java object that uses Jsoup.  
+- Jsoup was extended to include XPath support.  
+- A regular expression matcher is also available.
