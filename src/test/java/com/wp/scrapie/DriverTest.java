@@ -1,18 +1,18 @@
 package com.wp.scrapie;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class DriverTest {
 
 	@Test
 	public void test() throws IOException {
-		Driver.main(new String[] { "-f", "src/test/js/justExit.js", "-o",
+		Driver.main(new String[] { "-t", "xml", "-f", "src/test/js/justExit.js", "-o",
 				"target/test.xml" });
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 				+ "<rss>\n" + "<channel>\n" + "    <item>\n"

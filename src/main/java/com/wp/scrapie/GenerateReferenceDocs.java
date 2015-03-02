@@ -1,36 +1,20 @@
 package com.wp.scrapie;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.*;
+import com.wp.scrapie.js.JsAnnotation;
+import com.wp.scrapie.js.JsParser;
+import com.wp.scrapie.js.JsSignature;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.DocletTag;
-import com.thoughtworks.qdox.model.JavaAnnotatedElement;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaConstructor;
-import com.thoughtworks.qdox.model.JavaMember;
-import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaParameter;
-import com.thoughtworks.qdox.model.JavaSource;
-import com.wp.scrapie.js.JsAnnotation;
-import com.wp.scrapie.js.JsParser;
-import com.wp.scrapie.js.JsSignature;
+import java.io.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @internal
@@ -39,7 +23,7 @@ import com.wp.scrapie.js.JsSignature;
  */
 public class GenerateReferenceDocs {
 
-	private static final String DIST_DOCS = "./";
+	private static final String DIST_DOCS = "./src/main/docs/";
 	private static final Logger LOG = Logger
 			.getLogger(GenerateReferenceDocs.class);
 

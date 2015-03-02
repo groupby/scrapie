@@ -16,7 +16,7 @@ public class JsLoader {
 
 	@Before
 	public void before() {
-		Emitter.setRecord(0);
+		Emitter.setMaxRecords(0);
 		server = new PseudoServer();
 		Emitter.setSourceDirectory(new File("target"));
 	}

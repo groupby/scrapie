@@ -29,6 +29,7 @@ var UrlIterator = function(pGenerate) {
 	 * <code>
 	 * Loop through each of the generated URLs loading each page in turn and passing the context load for 
 	 * that page into the pDealWith function.
+	 * return true from this method to stop the iteration
 	 * </code>
 	 * 
 	 * @param pDealWith
@@ -40,7 +41,10 @@ var UrlIterator = function(pGenerate) {
 		while ((url = pGenerate(this.index)) != null && emitter.keepGoing()) {
 			this.index++;
 			emitter.load(url);
-			pDealWith(new EmitterWrapper(emitter));
+			var shouldStop = pDealWith(new EmitterWrapper(emitter));
+			if (shouldStop) {
+				return;
+			}
 		}
 	}
 }

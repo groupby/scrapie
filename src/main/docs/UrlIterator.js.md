@@ -36,4 +36,5 @@ the for each loop will exit.
 
 Loop through each of the generated URLs loading each page in turn and passing the context load for 
 that page into the pDealWith function.
+return true from this method to stop the iteration
 

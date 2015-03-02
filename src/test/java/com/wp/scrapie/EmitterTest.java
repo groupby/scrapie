@@ -42,14 +42,14 @@ public class EmitterTest extends JsLoader {
 	@Test
 	public void testRecord() throws Exception {
 		Emitter.setRecordCount(0);
-		Emitter.setRecord(2);
+		Emitter.setMaxRecords(2);
 		Emitter.setSourceFileName("iterateLow.js");
 		Emitter.setSourceDirectory(new File("target/"));
 		testSimple();
 
 		server = null;
 		Emitter.setRecordCount(0);
-		Emitter.setRecord(1);
+		Emitter.setMaxRecords(1);
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();
 		emitter.run(
@@ -59,7 +59,7 @@ public class EmitterTest extends JsLoader {
 		assertEquals("{\"title\":[\"title 0\"]}\n", writer.getBuffer()
 				.toString());
 
-		Emitter.setRecord(2);
+		Emitter.setMaxRecords(2);
 		Emitter.setRecordCount(0);
 		emitter = new Emitter();
 		writer = new StringWriter();
@@ -74,14 +74,14 @@ public class EmitterTest extends JsLoader {
 	@Test
 	public void testFileIterator() throws Exception {
 		Emitter.setRecordCount(0);
-		Emitter.setRecord(10);
+		Emitter.setMaxRecords(10);
 		Emitter.setSourceFileName("iterateFile.js");
 		Emitter.setSourceDirectory(new File("target/"));
 		testSimple();
 
 		server = null;
 		Emitter.setRecordCount(0);
-		Emitter.setRecord(10);
+		Emitter.setMaxRecords(10);
 		Emitter.setSourceFileName("iterateFile.js");
 		Emitter emitter = new Emitter();
 		StringWriter writer = new StringWriter();

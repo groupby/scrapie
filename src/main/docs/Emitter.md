@@ -15,6 +15,7 @@ Java method at runtime.
 
 
 ###Methods
+- [addCacheIgnoreText(String pValue)](#-1894739391) 
 - [addExcludeValue(String pValue)](#1526343849) 
 - [breakIntoSections(String pQuery, Function pDealWith)](#907510991) 
 - [emit(String pKey, List pValue)](#856545347) 
@@ -43,9 +44,19 @@ Java method at runtime.
 - [print(String pMessage)](#1272621438) 
 - [printDocument()](#-994781719) 
 - [processUrlsJq(String pQuery, Function pDealWith)](#405324898) 
-- [setRecord(int pRecord)](#-1092772818) 
+- [setMaxRecords(int pRecord)](#1808616033) 
 - [setUrl(String pUrl)](#-1399905258) 
 - [setWorkingId(String workingId)](#-1064871666) 
+
+
+#### <a style="font-size:16px;" name="-1894739391">addCacheIgnoreText</a><span style="font-size:16px;">(String pValue)</span>
+- <b>pValue</b>: 
+           The value that, if it exists in a page, should always be redownloaded.
+
+
+Global setting to tell the cache loader that if it finds something in the cache with these
+words to go back to the original URL.
+
 
 
 #### <a style="font-size:16px;" name="1526343849">addExcludeValue</a><span style="font-size:16px;">(String pValue)</span>
@@ -53,7 +64,7 @@ Java method at runtime.
            The value that should never be emitted.
 
 
-Global setting to tell the emitter that if it finds this 
+Global setting to tell the emitter that if it finds this
 value associated with any key, to drop that key value pair.
 
 
@@ -75,7 +86,7 @@ var sections = pContext.breakIntoSections(".item", function(pContext){
     // do some scraping
     pContext.emitForWorkingId("title", pContext.getJqText(".title"));
     pContext.flush();
-});     
+});
 ```
 
 
@@ -101,7 +112,7 @@ that is flushed to disk when `flush()` is called.
 
 #### <a style="font-size:16px;" name="294587270">emitForWorkingId</a><span style="font-size:16px;">(String pKey, List pValue)</span>
 
-Same as `emitForWorkingId()` but takes a list of values 
+Same as `emitForWorkingId()` but takes a list of values
 
 
 
@@ -113,10 +124,10 @@ Same as `emitForWorkingId()` but takes a list of values
 
 
 Similar to emit, however this method emits into a map with a specific name.
-Then name is set by calling `setWorkingId(String id)`.  This is held globally and 
-statically and thus any subsequent call to emitForWorkingId will always now store 
-key value pairs in that map.  The map is written to disk with a call to 
-`flush()`  
+Then name is set by calling `setWorkingId(String id)`.  This is held globally and
+statically and thus any subsequent call to emitForWorkingId will always now store
+key value pairs in that map.  The map is written to disk with a call to
+`flush()`
 
 
 
@@ -124,9 +135,9 @@ key value pairs in that map.  The map is written to disk with a call to
 #### <a style="font-size:16px;" name="-760377595">flush</a><span style="font-size:16px;">()</span>
 
 Write the current set of mpas to disk.  You can safely call this when nothing
-has yet been emitted.  It is wise to call this as frequently as makes sense 
+has yet been emitted.  It is wise to call this as frequently as makes sense
 as these maps are held in memory and you will run out of memory if you're crawling
-a large site.  
+a large site.
 
 
 
@@ -142,7 +153,7 @@ Useful if you need to override a specific cookie value at some point in the craw
 - <b>returns</b>: The current document in this context.
 
 Returns the document that was loaded by the `loadUrl()` call.
-This will also represent the document 
+This will also represent the document
 
 
 
@@ -155,8 +166,8 @@ This will also represent the document
 
 - <b>returns</b>: a list of elements that match this CSS path.
 
-Return an Elements object of all the matching elements against the provided 
-query.  
+Return an Elements object of all the matching elements against the provided
+query.
 
 Elements has a bunch of helper methods that return just the first element's string.
 
@@ -183,7 +194,7 @@ return a specific attribute from each element as a list.
 
 - <b>returns</b>: A list of strings of the text of the matched elements
 
-Rather than get the list of elements, return a list of the 
+Rather than get the list of elements, return a list of the
 text under each element.
 
 
@@ -199,7 +210,7 @@ or the previous url document.
 #### <span style="font-size:12px;color:#AAAAAA">Map&lt;String,String&gt;</span> <a style="font-size:16px;" name="874444513">getPostData</a><span style="font-size:16px;">()</span>
 - <b>returns</b>: An, always instatiated, map of key value pairs.
 
-Post data that should be set on a request.  
+Post data that should be set on a request.
 
 
 
@@ -294,11 +305,11 @@ Also see the get* methods that pull data from this document.
            the login
 
 
-Login to a website. Find the login URL from the action element of the form that 
-is used on the login page of that website. 
+Login to a website. Find the login URL from the action element of the form that
+is used on the login page of that website.
 Typically it's best to use the Chrome nework inspector to copy all of the form values
 that are submitted.  This is especially important when you're talking to a .NET application
-as they have crazy viewstate parameters that need to be sent. 
+as they have crazy viewstate parameters that need to be sent.
 
 
 
@@ -313,7 +324,7 @@ Helper method to print a string to standard out.  Prints at info level.
 
 #### <a style="font-size:16px;" name="-994781719">printDocument</a><span style="font-size:16px;">()</span>
 
-Helper method to print the entire loaded document to standard out. 
+Helper method to print the entire loaded document to standard out.
 Prints at info level.
 
 
@@ -328,7 +339,7 @@ Prints at info level.
 
 
 Method finds all the anchor tags that match the query.  For each
-anchor tag the URL is loaded and a new Emitter object is created 
+anchor tag the URL is loaded and a new Emitter object is created
 and passed back into into the dealWith function.
 
 ```JavaScript
@@ -339,7 +350,7 @@ pContext.processUrlsJq("a", function(pContext){
 
 
 
-#### <a style="font-size:16px;" name="-1092772818">setRecord</a><span style="font-size:16px;">(int pRecord)</span>
+#### <a style="font-size:16px;" name="1808616033">setMaxRecords</a><span style="font-size:16px;">(int pRecord)</span>
 - <b>pRecord</b>: 
            The number of records to emit before stopping.
 
