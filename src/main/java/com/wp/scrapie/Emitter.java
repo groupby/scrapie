@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.jaxen.JaxenException;
 import org.jaxen.jsoup.JsoupXPath;
 import org.jsoup.Connection;
@@ -74,7 +75,8 @@ public class Emitter implements EmitterWrapper {
     private static boolean noLoginCache = false;
 
     private static boolean noCache = false;
-
+    private static boolean skipToMaxIndex = true;
+    private Map<String, Long> maxIndexes = null;
     private Map<String, String> postData = new HashMap<>();
 
     private String url = null;
@@ -120,6 +122,10 @@ public class Emitter implements EmitterWrapper {
         record = pRecord;
     }
 
+    public static void setNoSkipToMaxIndex(boolean noSkip) {
+        skipToMaxIndex = !noSkip;
+    }
+
     /**
      * @internal
      */
@@ -147,7 +153,7 @@ public class Emitter implements EmitterWrapper {
      *
      * ```JavaScript
      * var sections = pContext.breakIntoSections(".item", function(pContext){
-     *     // You'll probably want to do set a working ID so that all the emits are grouped togethr.
+     *     // You'll probably want to do set a working ID so that all the emits are grouped together.
      *     pContext.setWorkingId(pContext.getJqText(".idHolder"));
      *     // do some scraping
      *     pContext.emitForWorkingId("title", pContext.getJqText(".title"));
@@ -570,6 +576,7 @@ public class Emitter implements EmitterWrapper {
                     writer.write("\n");
                     entry.getValue().clear();
                     recordCount++;
+                    writer.flush();
                 }
             } catch (JsonGenerationException e) {
                 e.printStackTrace();
@@ -1222,9 +1229,10 @@ public class Emitter implements EmitterWrapper {
     public static void setNoLoginCache(boolean pNoLoginCache) {
         noLoginCache = pNoLoginCache;
     }
+
     /**
      * @internal
-     * @param pNoLoginCache
+     * @param pNoCache
      */
     @DontGenerate
     public static void setNoCache(boolean pNoCache) {
@@ -1240,4 +1248,55 @@ public class Emitter implements EmitterWrapper {
         return new UrlPatternIterator(pPattern);
     }
 
+
+    public long findMaxIndex(String pPrefixUrl) throws IOException {
+        LOG.debug("Looking for max index of " + pPrefixUrl);
+        if (!skipToMaxIndex) {
+            return 0;
+        }
+        if (maxIndexes == null) {
+            loadMaxIndexes();
+        }
+        if (maxIndexes.containsKey(pPrefixUrl)) {
+            final Long indexValue = maxIndexes.get(pPrefixUrl);
+            LOG.info("Skipping to index: " + indexValue);
+            return new Long(indexValue);
+        }
+
+        LOG.debug("Max index not found, returning 0");
+        return 0;
+    }
+
+    public void saveMaxIndex(String pPrefixUrl, long pIndex) throws IOException {
+        if (maxIndexes == null) {
+            loadMaxIndexes();
+        }
+        maxIndexes.put(pPrefixUrl, pIndex);
+        final String cacheDir = createCacheDir();
+        FileUtils.writeStringToFile(new File(cacheDir + "/maxIndexes.json"), MAPPER.writeValueAsString(maxIndexes));
+    }
+
+    public Map<String, Long> getMaxIndexes() {
+        return maxIndexes;
+    }
+
+    public void resetMaxIndex() throws IOException {
+        if (maxIndexes == null) {
+            loadMaxIndexes();
+        }
+        maxIndexes.clear();
+    }
+
+    public void loadMaxIndexes() throws IOException {
+        maxIndexes = new HashMap<>();
+        final String cacheDir = createCacheDir();
+        final File maxIndexFile = new File(cacheDir + "/maxIndexes.json");
+        LOG.info("Loading max index file: " + maxIndexFile.getCanonicalPath());
+        if (maxIndexFile.exists()) {
+            String maxIndexesJson = FileUtils.readFileToString(maxIndexFile, "UTF-8");
+            maxIndexes = MAPPER.readValue(maxIndexesJson, new TypeReference<Map<String, Long>>() {
+            });
+            LOG.debug("loaded: " + maxIndexesJson);
+        }
+    }
 }

@@ -35,13 +35,22 @@ var UrlIterator = function(pGenerate) {
 	 * @param pDealWith
 	 *            the call back function that will be passed in the context of
 	 *            the page loaded from the generated URL.
+	 * @param prefixUrl
+	 *            The prefix url that will be used for figuring out what the max index
+	 *            reached was in the last run.
 	 */
-	this.forEach = function(pDealWith) {
-		var url = null;
+	this.forEach = function(pDealWith, prefixUrl) {
+		var url = pGenerate(this.index);
+		if (prefixUrl) {
+		    this.index = emitter.findMaxIndex(prefixUrl);
+		}
 		while ((url = pGenerate(this.index)) != null && emitter.keepGoing()) {
 			this.index++;
 			emitter.load(url);
 			var shouldStop = pDealWith(new EmitterWrapper(emitter));
+			if (prefixUrl) {
+			    emitter.saveMaxIndex(prefixUrl, this.index);
+			}
 			if (shouldStop) {
 				return;
 			}

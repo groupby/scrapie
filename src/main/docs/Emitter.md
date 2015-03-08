@@ -22,6 +22,7 @@ Java method at runtime.
 - [emit(String pKey, Object... pValue)](#-418495782) 
 - [emitForWorkingId(String pKey, List pValue)](#294587270) 
 - [emitForWorkingId(String pKey, Object... pValue)](#1789501815) 
+- [findMaxIndex(String pUrl)](#-1903999652)  returns long
 - [flush()](#-760377595) 
 - [getCookies()](#216551706)  returns Map
 - [getDocument()](#-1112689838)  returns org.jsoup.nodes.Element
@@ -29,6 +30,7 @@ Java method at runtime.
 - [getJq(String pQuery)](#1932918093)  returns org.jsoup.select.Elements
 - [getJqAttr(String pQuery, String pAttr)](#-51822634)  returns List
 - [getJqText(String pQuery)](#-1192716576)  returns List
+- [getMaxIndexes()](#-603788429)  returns Map
 - [getParent()](#-1041905503)  returns EmitterWrapper
 - [getPostData()](#874444513)  returns Map
 - [getReText(String pPattern)](#-1271561236)  returns List
@@ -40,11 +42,15 @@ Java method at runtime.
 - [getXPathAttr(String pQuery, String pAttr)](#-859866804)  returns List
 - [getXPathText(String pQuery)](#2138633942)  returns List
 - [load(String pUrl)](#410534269) 
+- [loadMaxIndexes()](#1690323203) 
 - [login(String pUrl, String... pKeyValues)](#-1609977486) 
 - [print(String pMessage)](#1272621438) 
 - [printDocument()](#-994781719) 
 - [processUrlsJq(String pQuery, Function pDealWith)](#405324898) 
+- [resetMaxIndex()](#-160956930) 
+- [saveMaxIndex(String pUrl, long pIndex)](#889866344) 
 - [setMaxRecords(int pRecord)](#1808616033) 
+- [setNoSkipToMaxIndex(boolean noSkip)](#-1386116332) 
 - [setUrl(String pUrl)](#-1399905258) 
 - [setWorkingId(String workingId)](#-1064871666) 
 
@@ -81,7 +87,7 @@ for each section.  This new context object is passed to the callback function.
 
 ```JavaScript
 var sections = pContext.breakIntoSections(".item", function(pContext){
-    // You'll probably want to do set a working ID so that all the emits are grouped togethr.
+    // You'll probably want to do set a working ID so that all the emits are grouped together.
     pContext.setWorkingId(pContext.getJqText(".idHolder"));
     // do some scraping
     pContext.emitForWorkingId("title", pContext.getJqText(".title"));
@@ -131,6 +137,8 @@ key value pairs in that map.  The map is written to disk with a call to
 
 
 
+
+#### <span style="font-size:12px;color:#AAAAAA">long</span> <a style="font-size:16px;" name="-1903999652">findMaxIndex</a><span style="font-size:16px;">(String pUrl)</span>
 
 #### <a style="font-size:16px;" name="-760377595">flush</a><span style="font-size:16px;">()</span>
 
@@ -198,6 +206,8 @@ Rather than get the list of elements, return a list of the
 text under each element.
 
 
+
+#### <span style="font-size:12px;color:#AAAAAA">Map&lt;String,Long&gt;</span> <a style="font-size:16px;" name="-603788429">getMaxIndexes</a><span style="font-size:16px;">()</span>
 
 #### <span style="font-size:12px;color:#AAAAAA">EmitterWrapper</span> <a style="font-size:16px;" name="-1041905503">getParent</a><span style="font-size:16px;">()</span>
 - <b>returns</b>: The parent context. It's safe to call all the JavaScript methods.
@@ -297,6 +307,8 @@ Also see the get* methods that pull data from this document.
 
 
 
+#### <a style="font-size:16px;" name="1690323203">loadMaxIndexes</a><span style="font-size:16px;">()</span>
+
 #### <a style="font-size:16px;" name="-1609977486">login</a><span style="font-size:16px;">(String pUrl, String... pKeyValues)</span>
 - <b>pUrl</b>: 
            The URL to submit the login to.
@@ -350,6 +362,10 @@ pContext.processUrlsJq("a", function(pContext){
 
 
 
+#### <a style="font-size:16px;" name="-160956930">resetMaxIndex</a><span style="font-size:16px;">()</span>
+
+#### <a style="font-size:16px;" name="889866344">saveMaxIndex</a><span style="font-size:16px;">(String pUrl, long pIndex)</span>
+
 #### <a style="font-size:16px;" name="1808616033">setMaxRecords</a><span style="font-size:16px;">(int pRecord)</span>
 - <b>pRecord</b>: 
            The number of records to emit before stopping.
@@ -361,6 +377,8 @@ it will hit disk and not the internet.  Good when you need to quickly iterate
 through trials of your CSS/XPath/RegEx selectors.
 
 
+
+#### <a style="font-size:16px;" name="-1386116332">setNoSkipToMaxIndex</a><span style="font-size:16px;">(boolean noSkip)</span>
 
 #### <a style="font-size:16px;" name="-1399905258">setUrl</a><span style="font-size:16px;">(String pUrl)</span>
 - <b>pUrl</b>: 

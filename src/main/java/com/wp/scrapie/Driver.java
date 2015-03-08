@@ -4,10 +4,7 @@ import org.apache.commons.cli.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * @internal
@@ -30,12 +27,15 @@ public class Driver {
                 "Log Level, trace, debug, info (default)");
         Option noCache = new Option("n", "noCache", false,
                 "Do not load URLs from cache");
+        Option noSkip = new Option("s", "noSkip", false, "Do not skip to the last successful iteration");
         Option max = new Option("r", "maxRecords", true,
                 "Stop processing after N records");
         Option typeOption = new Option("t", "type", true,
                 "The record type, json (default) or xml");
         Option noCacheLoginOption = new Option("l", "loginLive", false,
                 "Always go online for login attempts so that cookies are retrieved and stored.");
+        Option append = new Option("a", "append", false,
+                "Append to an existing file.");
 
         options.addOption(filenameOption);
         options.addOption(outputOption);
@@ -43,6 +43,8 @@ public class Driver {
         options.addOption(noCache);
         options.addOption(max);
         options.addOption(typeOption);
+        options.addOption(noSkip);
+        options.addOption(append);
         options.addOption(noCacheLoginOption);
     }
 
@@ -67,16 +69,19 @@ public class Driver {
             String maxRecords = cmd.getOptionValue('r', "0");
             boolean noLoginCache = cmd.hasOption('l');
             boolean noCache = cmd.hasOption('n');
+            boolean noSkip = cmd.hasOption('s');
+            boolean append = cmd.hasOption('a');
             Emitter emitter = new Emitter();
             Emitter.setMaxRecords(new Integer(maxRecords).intValue());
             Emitter.setNoLoginCache(noLoginCache);
             Emitter.setNoCache(noCache);
+            Emitter.setNoSkipToMaxIndex(noSkip);
             Writer out = null;
             String type = cmd.getOptionValue('t', "json");
             if (type.equals("xml")) {
-                out = new XmlWriter(new FileWriter(outputFilename));
+                out = new BufferedWriter(new XmlWriter(new FileWriter(outputFilename, append)));
             } else {
-                out = new FileWriter(outputFilename);
+                out = new BufferedWriter(new FileWriter(outputFilename, append));
             }
             emitter.runFile(filename, out);
             out.flush();
