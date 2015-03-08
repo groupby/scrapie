@@ -557,13 +557,13 @@ public class Emitter implements EmitterWrapper {
 
     /**
      * <code>
-     * Write the current set of mpas to disk.  You can safely call this when nothing
+     * Write the current set of maps to disk.  You can safely call this when nothing
      * has yet been emitted.  It is wise to call this as frequently as makes sense
      * as these maps are held in memory and you will run out of memory if you're crawling
      * a large site.
      * </code>
      */
-    public static void flush() {
+    public synchronized static void flush() {
         if (LOG.isTraceEnabled()) {
             LOG.trace("flush()");
         }
